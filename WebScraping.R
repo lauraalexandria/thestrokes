@@ -53,7 +53,4 @@ get_lyrics_links <- function(artist_link){
 plan(multisession)
 musicas <- get_lyrics_links("/the-strokes/")
 
-letras <- apply(musicas[,3], 1, get_lyric)
-letras <- letras[-(1:25)]
-
 # Fonte: https://aneisse.com/post/2019-02-10-music-data-scraping/2019-02-10-music-data-scraping/
