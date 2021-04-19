@@ -51,7 +51,7 @@ get_lyrics_links <- function(artist_link){
 
 # Returning all the links to the musics
 plan(multisession)
-musicas <- get_lyrics_links("/the-strokes/")
+musicas <- get_lyrics_links("/the-strokes/") %>% slice(26:n()) # repete o top 25;
 
 # Tentei 
 
