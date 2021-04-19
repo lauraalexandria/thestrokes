@@ -53,4 +53,22 @@ get_lyrics_links <- function(artist_link){
 plan(multisession)
 musicas <- get_lyrics_links("/the-strokes/")
 
+# Tentei 
+
+albums <- function (name, message = TRUE) {
+  name <- stringr::str_to_lower(name)
+  cont <- paste0("https://www.vagalume.com.br/", name, "/index.js") %>% 
+    jsonlite::fromJSON()
+  if (!is.null(cont)) {
+    albums <- data.frame(cont$artist$album$item, stringsAsFactors = FALSE)[,-3] 
+    names(albums)[2] <- "title"
+  }
+  else {
+    albums <- NULL
+    if (message) 
+      print("Artist not found.")
+  }
+  return(albums)
+}
+
 # Fonte: https://aneisse.com/post/2019-02-10-music-data-scraping/2019-02-10-music-data-scraping/
