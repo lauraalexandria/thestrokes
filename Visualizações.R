@@ -33,7 +33,26 @@ ggplot(contagem, aes(x = n)) + geom_histogram()
 wordcloud2(contagem %>% filter(n > 10))
 wordcloud2(contagem %>% filter(n > 5))
 
-# Proporção de Palavras por Música -----------------------------------------------------
+# Distribuição do número de  Palavras por música -------------------------------------------
+
+num_por_musica <- musicas %>% select(c(2,4)) %>% 
+  unnest_tokens(word, letras) %>%
+  anti_join(stop_words) %>%
+  group_by(SName) %>% 
+  count()
+
+ggplot(num_por_musica, aes(n)) + geom_histogram(color = "white") + theme_minimal()
+
+num_por_musica %>% ungroup() %>% 
+  e_charts() %>%
+  e_histogram(n) %>% 
+  e_tooltip(trigger = "axis") %>% 
+  e_theme("sakura")
+
+menor <- num_por_musica %>% arrange(n) %>% top_n(1)
+maior <- num_por_musica %>% arrange(desc(n)) %>% top_n(1)
+
+# Proporção de cada palavra por Música -----------------------------------------------------
 
 count(contagem) # 1489 palavras presentes
 
