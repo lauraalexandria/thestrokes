@@ -1,7 +1,9 @@
 library(tidyverse)
 library(tidytext)
 library(wordcloud2)
+library(textdata) # contem os dados para a análise de sentimento
 library(here)
+library(echarts4r)
 
 ## Fontes: https://www.tidytextmining.com/tidytext.html
 ## 
@@ -11,6 +13,10 @@ library(here)
 # 2 - Fazer Análise Fatorial com as palavras;
 # 3 - Análise de Sentimentos;
 # 4 - Lembrar de dividir por álbuns!!
+
+## OBSERVAÇÕES
+# 1 - Revisar as músicas do top3 de sadness
+# 2 - considero yeah, hey e gonna como stopwords?
 
 data("stop_words") # Fixando as stopwords
 
@@ -79,6 +85,101 @@ prop_por_musica %>%
 
 ggplot(prop_por_musica, aes(x = gonna, y = live)) +
   geom_point()
+
+# Análise de Sentimentos -------------------------------------------------------------------
+
+## Mas não pode esquecer que algumas palavras tem mais de uma classificação e são repetidas
+
+sentiments <- get_sentiments("nrc")
+
+musicas_e_sent <- musicas %>% select(c(2,4)) %>% 
+  unnest_tokens(word, letras) %>%
+  anti_join(stop_words) %>% inner_join(sentiments) %>% 
+  mutate(sentiment = str_to_sentence(sentiment))
+
+## Sentimentos mais comuns entre todas as músicas
+musicas_e_sent %>% 
+  group_by(sentiment) %>% 
+  count() %>% ungroup() %>% 
+  e_charts(sentiment) %>% 
+  e_bar(n, name = "Frequency", legend = F) %>% 
+  e_flip_coords() %>% 
+  e_tooltip() %>% 
+  e_labels(position = "right")
+
+## Sentimentos para uma música escolhida
+sent_por_mus <- musicas_e_sent %>% 
+  group_by(SName, sentiment) %>% count() %>% 
+  ungroup() %>% group_by(SName) %>% 
+  mutate(prop = n/sum(n)) %>% ungroup()
+
+input_musica <- "Barely Legal"
+
+sent_por_mus %>% 
+  filter(SName == input_musica) %>% 
+  arrange(prop) %>% 
+  e_charts(sentiment) %>% 
+  e_polar() %>% 
+  e_angle_axis() %>% 
+  e_radius_axis(sentiment) %>% 
+  e_bar(prop, coord_system = "polar")
+  
+sent_por_mus %>% 
+  filter(SName == input_musica) %>%
+  e_charts(sentiment) %>% 
+  e_pie(prop, legend = F)  
+  
+sent_por_mus %>% 
+  filter(SName == input_musica) %>%
+  e_charts(sentiment) %>% 
+  e_pie(prop, legend = F, radius = c("45%", "70%"))  %>%
+  e_text_g(right = 185, top = 175,
+    style = list(text = input_musica, fontSize = 20, fontFamily = 'monospace'))
+
+# Na verdade mesmo queria fazer uma treemap, né..
+
+## Músicas mais tristes, alegres ou tanto faz
+
+input_sentimento <- "Anger"
+input_sentimento <- "Positive"
+input_sentimento <- "Sadness"
+
+top_3 <- sent_por_mus %>% 
+  filter(sentiment == input_sentimento) %>% 
+  slice_max(prop, n = 3)
+  
+e_charts() %>% # O outro modelo é mais bonitinho
+  e_gauge(as.numeric((top_3[1,4]*100) %>% round(2)), 
+          paste0(top_3[1,1], "\n", input_sentimento))
+
+e_charts() %>% 
+  e_gauge(as.numeric((top_3[2,4]*100) %>% round(2)), 
+          paste0(top_3[2,1], "\n", input_sentimento)) 
+
+e_charts() %>% 
+  e_gauge(as.numeric((top_3[3,4]*100) %>% round(2)), 
+          paste0(top_3[3,1], "\n", input_sentimento)) 
+
+## Relacionando score de negatividade e frequência
+
+afinn <- get_sentiments("afinn")
+
+sent_num_por_mus <- musicas %>% select(c(2,4)) %>% 
+  unnest_tokens(word, letras) %>%
+  anti_join(stop_words) %>%
+  group_by(word) %>% 
+  count() %>% ungroup() %>% 
+  inner_join(afinn) %>% 
+  filter(word != "yeah")
+
+sent_num_por_mus %>% 
+  e_charts() %>% 
+  e_histogram(n) 
+
+sent_num_por_mus %>% 
+  e_charts(value) %>% 
+  e_scatter(n, name = "Frequency") %>% 
+  e_tooltip()
 
 
 
