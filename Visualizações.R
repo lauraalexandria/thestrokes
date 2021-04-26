@@ -174,7 +174,7 @@ sent_num_por_mus <- musicas %>% select(c(2,4)) %>%
 
 sent_num_por_mus %>% 
   e_charts() %>% 
-  e_histogram(n) 
+  e_histogram(value) 
 
 sent_num_por_mus %>% 
   e_charts(value) %>% 
