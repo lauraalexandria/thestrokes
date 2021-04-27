@@ -13,6 +13,7 @@ library(echarts4r)
 # 2 - Fazer Análise Fatorial com as palavras;
 # 3 - Análise de Sentimentos;
 # 4 - Lembrar de dividir por álbuns!!
+# 5 - Dá pra fazer mais alguma coisa com o tf-idf?
 
 ## OBSERVAÇÕES
 # 1 - Revisar as músicas do top3 de sadness
@@ -52,7 +53,9 @@ ggplot(num_por_musica, aes(n)) + geom_histogram(color = "white") + theme_minimal
 num_por_musica %>% ungroup() %>% 
   e_charts() %>%
   e_histogram(n) %>% 
-  e_tooltip(trigger = "axis") %>% 
+  e_tooltip(trigger = "axis", backgroundColor = "rgb(255,255,255,0.8)", 
+            borderColor = '#333', borderWidth = 1,
+            textStyle = list(color = '#333')) %>% 
   e_theme("sakura")
 
 menor <- num_por_musica %>% arrange(n) %>% top_n(1)
@@ -104,7 +107,8 @@ musicas_e_sent %>%
   e_charts(sentiment) %>% 
   e_bar(n, name = "Frequency", legend = F) %>% 
   e_flip_coords() %>% 
-  e_tooltip() %>% 
+  e_tooltip(backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333', borderWidth = 1,
+            textStyle = list(color = '#333')) %>% 
   e_labels(position = "right")
 
 ## Sentimentos para uma música escolhida
@@ -179,7 +183,42 @@ sent_num_por_mus %>%
 sent_num_por_mus %>% 
   e_charts(value) %>% 
   e_scatter(n, name = "Frequency") %>% 
-  e_tooltip()
+  e_tooltip(backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333', borderWidth = 1,
+            textStyle = list(color = '#333'))
+
+# Term Frequency --------------------------------------------------------------------------
+
+# TF (Term Frequency): O quão frequente a palavra é no documento.
+# IDF(Inverse Document Frequency): O quão rara é uma palavra em um conjunto de documentos.
+# TF-ITF: A frequência da palavra ajustado ao quanto ela é rara. Multiplicação dos termos.
+
+#idf(term) = ln(n° documentos/ n° documentos que possuem o termo)
+
+tf_idf <- musicas %>% select(c(2,4)) %>% 
+  unnest_tokens(word, letras) %>%
+  anti_join(stop_words) %>% 
+  group_by(SName) %>% 
+  count(word) %>% ungroup() %>% 
+  bind_tf_idf(word, SName, n)
+
+tf_idf %>%          # O quanto isso faria sentido?
+  e_chart(tf) %>% 
+  e_scatter(idf) %>% 
+  e_tooltip(backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333', borderWidth = 1,
+            textStyle = list(color = '#333'))
+
+input_musica_tf_idf <- "One Way Trigger"
+
+tf_idf %>%
+  filter(SName == input_musica_tf_idf) %>% 
+  slice_max(tf_idf, n = 10) %>% 
+  e_charts(word) %>% 
+  e_bar(tf_idf, legend = F, name = "Ajusted Frequency") %>% 
+  e_tooltip(backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333', borderWidth = 1,
+            textStyle = list(color = '#333')) %>% 
+  e_flip_coords()
 
 
+
+# Similaridade entre músicas --------------------------------------------------------------
 
