@@ -11,15 +11,14 @@ library(echarts4r)
 ## IDEIAS
 # 1 - Tentar deixar a nuvem com formato específico;
 # 2 - Fazer Análise Fatorial com as palavras;
-# 3 - Análise de Sentimentos;
 # 4 - Lembrar de dividir por álbuns!!
 # 5 - Dá pra fazer mais alguma coisa com o tf-idf?
 
 ## OBSERVAÇÕES
 # 1 - Revisar as músicas do top3 de sadness
-# 2 - considero yeah, hey e gonna como stopwords?
 
-data("stop_words") # Fixando as stopwords
+data("stop_words")  # Fixando as stopwords
+stop_words <- stop_words %>% add_row(word = c("yeah", "gonna", "hey"))
 
 # Carregando os Dados ------------------------------------------------------------------
 
@@ -218,7 +217,43 @@ tf_idf %>%
             textStyle = list(color = '#333')) %>% 
   e_flip_coords()
 
+# Relação entre palavras ------------------------------------------------------------------
 
+duplas <- musicas %>% select(c(2,4)) %>% 
+  unnest_tokens(bigram, letras, token = "ngrams", n = 2) %>%
+  separate(bigram, c("word1", "word2"), sep = " ") %>% 
+  filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word) # %>% 
+  #unite(bigram, word1, word2, sep = " ")
+
+sankey <- duplas %>% group_by(word1, word2) %>% count() %>% ungroup()
+
+# sankey <- data.frame(
+#   word1 = c("a", "b", "c", "d", "c"),
+#   word2 = c("b", "c", "d", "e", "e"),
+#   n = ceiling(rnorm(5, 10, 1)),
+#   stringsAsFactors = FALSE
+# )
+
+sankey %>% slice_max(n, n = 3) %>% # NÃO TÁ FUNCIONANDOOOO
+  e_charts() %>% 
+  e_sankey(word1, word2, n, layout = list(orient = 'vertical')) %>% 
+  e_title("Sankey chart")
+
+library(ggraph)
+library(igraph)
+
+bigram_graph <- sankey %>%
+  filter(n > 5) %>%
+  igraph::graph_from_data_frame()
+
+a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+
+ggraph(bigram_graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
+                 arrow = a, end_cap = circle(.07, 'inches')) +
+  geom_node_point(color = "lightblue", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+  theme_void()
 
 # Similaridade entre músicas --------------------------------------------------------------
 
