@@ -7,6 +7,15 @@ library(echarts4r)
 
 ## Fontes: https://www.tidytextmining.com/tidytext.html
 ## 
+## NOVAS FONTES:
+## https://m-clark.github.io/text-analysis-with-R/
+## https://cbail.github.io/textasdata/word2vec/rmarkdown/word2vec.html
+## http://csinpi.github.io/pubs/mml12_moore.pdf
+## https://rpubs.com/nabiilahardini/word2vec
+## https://github.com/bnosac/ruimtehol
+## https://cran.r-project.org/web/packages/ruimtehol/vignettes/ground-control-to-ruimtehol.pdf
+## https://michaelmccarthy.netlify.app/post/embedding-multimedia-files-in-r-markdown-html-documents/
+
 
 ## IDEIAS
 # 1 - Tentar deixar a nuvem com formato específico;

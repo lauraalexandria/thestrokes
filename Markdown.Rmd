@@ -1,0 +1,55 @@
+---
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      css: styles.css
+---
+
+<style>
+body {
+  text-align: justify}
+  
+#TOC {
+  background: url("https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/022011/untitled-1_95.png?itok=i9qUrcs1");
+  background-size: contain;
+  padding-top: 250px !important;
+  background-repeat: no-repeat;
+  color: purple;
+  border-color: #fffff}
+  
+.tocify {
+  border: none;
+}
+  
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: purple}
+</style>
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this: aaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaa aaaaaaaaaaaaaaaa aaaaaaaa aaaaaaaaa aaaaaaaaaaaaaaaaa aaaaaaa aaaaaaaaaaa aaaaaaaaa aaaaaa
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Outro trem aqui
+
+### teste
+
+### testette
