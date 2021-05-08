@@ -25,6 +25,20 @@ body {
   
 .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
     background-color: purple}
+    
+div.container {
+  width: 100% 
+}
+    
+div.bloco1 {
+  text-align: justify;
+  width : 250px;
+  padding: 1em;
+  background: rgba(143, 81, 249, 0.4);
+  color: black;
+  border-radius: 10px;
+}
+
 </style>
 
 
@@ -78,15 +92,107 @@ num_por_musica <- musicas %>% select(c(2,4)) %>%
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>%
   group_by(SName) %>% 
-  count()
+  count() %>% ungroup()
 
-num_por_musica %>% ungroup() %>% 
+num_por_musica  %>% 
   e_charts() %>%
   e_histogram(n) %>% 
   e_tooltip(trigger = "axis", backgroundColor = "rgb(255,255,255,0.8)", 
             borderColor = '#333', borderWidth = 1,
             textStyle = list(color = '#333')) %>% 
   e_theme("sakura")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+menor <- num_por_musica %>% slice_min(order_by = n, n = 1)
+menor_mus <- menor %>% pull(SName)
+menor_quant <- menor %>% pull(n)
+maior <- num_por_musica %>% slice_max(order_by = n, n = 1)
+maior_mus <- maior %>% pull(SName)
+maior_quant <- maior %>% pull(n)
+```
+
+<div class = "container">
+  
+<div class = "bloco1">
+Agora é ver se eu consigo deixar um do lado do outro...
+</div>
+  
+<div class = "bloco1">
+Here, I use 3 subunits of size 4 (4x3=12). The last column is used for a plot. You can read more about the grid system [here](bootstrap grid system). I got this result showing the following code in my R Markdown document.
+</div>
+
+</div>
+
+# Proportion of Word in each song - é aqui que poderia entrar um ANÁLISE FATORIAL
+
+Foram usadas 1489 palavras diferentes em todas as músicas/ ainda tem que melhorar a tooltip aqui!
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+prop_por_musica <- musicas %>% select(c(2,4)) %>% 
+  unnest_tokens(word, letras) %>%
+  anti_join(stop_words) %>%
+  group_by(SName, word) %>% 
+  count() %>% 
+  ungroup() %>% group_by(SName) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  select(-3) %>% 
+  pivot_wider(1:3, names_from = word, values_from = prop, values_fill = 0) 
+
+top_10 <- contagem %>% arrange(desc(n)) %>% slice(1:10) %>% pull(word)
+
+prop_por_musica %>% 
+  select(1, top_10) %>% 
+  mutate(var1 = sum(time:love),
+         var2 = sum(hard:night)) %>% 
+  e_chart(var1) %>% 
+  e_scatter(var2, symbol_size = 5, legend = F) %>% 
+  e_tooltip(trigger = "axis", 
+            formatter = e_tooltip_pointer_formatter("currency"),
+            axisPointer = list(type = "cross"),
+            backgroundColor = "rgb(255,255,255,0.8)", 
+            borderColor = '#333', borderWidth = 1,
+            textStyle = list(color = '#333'))
+```
+
+
+# Sentiment Analisys
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+sentiments <- get_sentiments("nrc")
+
+musicas_e_sent <- musicas %>% select(c(2,4)) %>% 
+  unnest_tokens(word, letras) %>%
+  anti_join(stop_words) %>% inner_join(sentiments) %>% 
+  mutate(sentiment = str_to_sentence(sentiment))
+
+musicas_e_sent %>% 
+  group_by(sentiment) %>% 
+  count() %>% ungroup() %>% 
+  e_charts(sentiment) %>% 
+  e_bar(n, name = "Frequency", legend = F) %>% 
+  e_flip_coords() %>% 
+  e_tooltip(backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333', borderWidth = 1,
+            textStyle = list(color = '#333')) %>% 
+  e_labels(position = "right")
+```
+
+Now you can choose a song
+
+```{r}
+sent_por_mus <- musicas_e_sent %>% 
+  group_by(SName, sentiment) %>% count() %>% 
+  ungroup() %>% group_by(SName) %>% 
+  mutate(prop = n/sum(n)) %>% ungroup()
+
+input_musica <- "Barely Legal"
+
+sent_por_mus %>% 
+  filter(SName == input_musica) %>%
+  e_charts(sentiment) %>% 
+  e_pie(prop, legend = F, radius = c("45%", "70%"))  %>%
+  e_text_g(right = 185, top = 175,
+    style = list(text = input_musica, fontSize = 20, fontFamily = 'monospace'))
 ```
 
 
