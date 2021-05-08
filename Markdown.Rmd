@@ -1,5 +1,5 @@
 ---
-output:
+output: 
   html_document:
     toc: true
     toc_float:
@@ -28,28 +28,65 @@ body {
 </style>
 
 
-## R Markdown
+```{r include=FALSE, message=F, warning=F}
+library(tidyverse)
+library(tidytext)
+library(wordcloud2)
+library(textdata) 
+library(here)
+library(echarts4r)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+data("stop_words")  # Fixando as stopwords
+stop_words <- stop_words %>% add_row(word = c("yeah", "gonna", "hey"))
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this: aaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaa aaaaaaaaaaaaaaaa aaaaaaaa aaaaaaaaa aaaaaaaaaaaaaaaaa aaaaaaa aaaaaaaaaaa aaaaaaaaa aaaaaa
-
-```{r cars}
-summary(cars)
+source("WebScraping.R")
+letras <- apply(musicas[,3], 1, get_lyric)
+musicas <- musicas %>% 
+  mutate(letras = tolower(letras))
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+# Indrodution
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+I love The Strokes, and a WebScrap 90 songs of them
+
+# Cloud Words
+
+```{r echo=FALSE, message=F, warning=F}
+contagem <- musicas %>% select(c(2,4)) %>%
+  unnest_tokens(word, letras) %>%
+  anti_join(stop_words) %>%
+  count(word)
+
+#wordcloud2(contagem %>% filter(n > 5))
+
+contagem %>%
+  filter(n > 5) %>%
+  e_charts() %>%
+  e_cloud(word, n, shape = "circle") %>% 
+  e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
+            borderColor = '#333', borderWidth = 1,
+            textStyle = list(color = '#333'))
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
-## Outro trem aqui
+# Number of words by Song
 
-### teste
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+num_por_musica <- musicas %>% select(c(2,4)) %>% 
+  unnest_tokens(word, letras) %>%
+  anti_join(stop_words) %>%
+  group_by(SName) %>% 
+  count()
 
-### testette
+num_por_musica %>% ungroup() %>% 
+  e_charts() %>%
+  e_histogram(n) %>% 
+  e_tooltip(trigger = "axis", backgroundColor = "rgb(255,255,255,0.8)", 
+            borderColor = '#333', borderWidth = 1,
+            textStyle = list(color = '#333')) %>% 
+  e_theme("sakura")
+```
+
+
