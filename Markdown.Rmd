@@ -193,6 +193,32 @@ sent_por_mus %>%
   e_pie(prop, legend = F, radius = c("45%", "70%"))  %>%
   e_text_g(right = 185, top = 175,
     style = list(text = input_musica, fontSize = 20, fontFamily = 'monospace'))
+
+sent_por_mus %>% 
+  group_by(SName) %>% 
+  e_charts(sentiment, timeline = TRUE) %>% 
+  e_pie(prop, legend = F, radius = c("45%", "70%"))  %>%
+  e_text_g(right = 185, top = 175,
+    style = list(text = "SName", fontSize = 20, fontFamily = 'monospace'))
 ```
+
+# Teste {.tabset .tabset-fade .tabset-pills}
+
+## Is This It
+ 
+## Room On Fire
+
+## First Impressions Of Earth
+
+## Angles
+
+## Comedown Machine
+
+## Future Presente Past
+
+## The New Abnormal
+ 
+
+
 
 
