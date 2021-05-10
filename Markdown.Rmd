@@ -202,23 +202,214 @@ sent_por_mus %>%
     style = list(text = "SName", fontSize = 20, fontFamily = 'monospace'))
 ```
 
-# Teste {.tabset .tabset-fade .tabset-pills}
+## {.tabset .tabset-fade .tabset-pills}
 
-## Is This It
+```{r include=FALSE, message = F}
+musicas_e_albuns <- musicas_e_sent %>% 
+  inner_join(albuns)
+```
+
+### Is This It
+
+```{r echo=FALSE}
+input_album <- "Is This It"
+
+musicas_e_albuns %>% 
+  filter(Album == input_album) %>% 
+  group_by(SName, sentiment) %>% count() %>% 
+  ungroup() %>% group_by(SName) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  e_charts(sentiment, timeline = TRUE) %>% 
+  e_pie(prop, legend = F, radius = c("45%", "70%"))  %>%
+  e_text_g(right = 185, top = 175,
+    style = list(text = "SName", fontSize = 20, fontFamily = 'monospace'))
+```
+
  
-## Room On Fire
+### Room On Fire
 
-## First Impressions Of Earth
+```{r echo=FALSE}
+input_album <- "Room On Fire"
 
-## Angles
+musicas_e_albuns %>% 
+  filter(Album == input_album) %>% 
+  group_by(SName, sentiment) %>% count() %>% 
+  ungroup() %>% group_by(SName) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  e_charts(sentiment, timeline = TRUE) %>% 
+  e_pie(prop, legend = F, radius = c("45%", "70%"))  %>%
+  e_text_g(right = 185, top = 175,
+    style = list(text = "SName", fontSize = 20, fontFamily = 'monospace'))
+```
 
-## Comedown Machine
+### First Impressions of Earth
 
-## Future Presente Past
+```{r echo=FALSE}
+input_album <- "First Impressions of Earth"
 
-## The New Abnormal
+musicas_e_albuns %>% 
+  filter(Album == input_album) %>% 
+  group_by(SName, sentiment) %>% count() %>% 
+  ungroup() %>% group_by(SName) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  e_charts(sentiment, timeline = TRUE) %>% 
+  e_pie(prop, legend = F, radius = c("45%", "70%"))  %>%
+  e_text_g(right = 185, top = 175,
+    style = list(text = "SName", fontSize = 20, fontFamily = 'monospace'))
+```
+
+### Angles
+
+```{r echo=FALSE}
+input_album <- "Angles"
+
+musicas_e_albuns %>% 
+  filter(Album == input_album) %>% 
+  group_by(SName, sentiment) %>% count() %>% 
+  ungroup() %>% group_by(SName) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  e_charts(sentiment, timeline = TRUE) %>% 
+  e_pie(prop, legend = F, radius = c("45%", "70%"))  %>%
+  e_text_g(right = 185, top = 175,
+    style = list(text = "SName", fontSize = 20, fontFamily = 'monospace'))
+```
+
+### Comedown Machine
+
+```{r echo=FALSE}
+input_album <- "Comedown Machine"
+
+musicas_e_albuns %>% 
+  filter(Album == input_album) %>% 
+  group_by(SName, sentiment) %>% count() %>% 
+  ungroup() %>% group_by(SName) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  e_charts(sentiment, timeline = TRUE) %>% 
+  e_pie(prop, legend = F, radius = c("45%", "70%"))  %>%
+  e_text_g(right = 185, top = 175,
+    style = list(text = "SName", fontSize = 20, fontFamily = 'monospace'))
+```
+
+### Future Present Past
+
+```{r echo=FALSE}
+input_album <- "Future Present Past [EP]"
+
+musicas_e_albuns %>% 
+  filter(Album == input_album) %>% 
+  group_by(SName, sentiment) %>% count() %>% 
+  ungroup() %>% group_by(SName) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  e_charts(sentiment, timeline = TRUE) %>% 
+  e_pie(prop, legend = F, radius = c("45%", "70%"))  %>%
+  e_text_g(right = 185, top = 175,
+    style = list(text = "SName", fontSize = 20, fontFamily = 'monospace'))
+```
+
+### The New Abnormal
+
+```{r echo=FALSE}
+input_album <- "The New Abnormal"
+
+musicas_e_albuns %>% 
+  filter(Album == input_album) %>% 
+  group_by(SName, sentiment) %>% count() %>% 
+  ungroup() %>% group_by(SName) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  e_charts(sentiment, timeline = TRUE) %>% 
+  e_pie(prop, legend = F, radius = c("45%", "70%"))  %>%
+  e_text_g(right = 185, top = 175,
+    style = list(text = "SName", fontSize = 20, fontFamily = 'monospace'))
+```
  
+## {.tabset .tabset-fade .tabset-pills}
 
+```{r include=FALSE}
+gauge_trios <- function(sent){
+  
+  top_3 <- sent_por_mus %>% 
+  filter(sentiment == sent) %>% 
+  slice_max(prop, n = 3)
+  
+  g1 <- e_charts() %>% # O outro modelo é mais bonitinho
+  e_gauge(as.numeric((top_3[1,4]*100) %>% round(2)), 
+          paste0("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", top_3[1,1]))
+
+  g2 <- e_charts() %>% 
+  e_gauge(as.numeric((top_3[2,4]*100) %>% round(2)), 
+          paste0("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", top_3[2,1])) 
+
+  g3 <- e_charts() %>% 
+  e_gauge(as.numeric((top_3[3,4]*100) %>% round(2)), 
+          paste0("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", top_3[3,1])) 
+
+  e_arrange(g1, g2, g3, rows = 1, cols = 3)
+  
+}
+```
+
+
+### Anger
+
+```{r echo=FALSE}
+gauge_trios("Anger")
+```
+
+
+### Anticipation
+
+```{r echo=FALSE}
+gauge_trios("Anticipation")
+```
+
+### Disgust
+
+```{r echo=FALSE}
+gauge_trios("Disgust")
+```
+
+
+### Fear
+
+```{r echo=FALSE}
+gauge_trios("Fear")
+```
+
+### Joy
+
+```{r echo=FALSE}
+gauge_trios("Joy")
+```
+
+### Negative
+
+```{r echo=FALSE}
+gauge_trios("Negative") 
+```
+
+### Positive
+
+```{r echo=FALSE}
+gauge_trios("Positive")
+```
+
+### Sadness
+
+```{r echo=FALSE}
+gauge_trios("Sadness") 
+```
+
+### Surprise
+
+```{r echo=FALSE}
+gauge_trios("Surprise")
+```
+
+### Trust
+
+```{r echo=FALSE}
+gauge_trios("Trust")
+```
 
 
 
