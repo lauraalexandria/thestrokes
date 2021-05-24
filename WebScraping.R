@@ -7,7 +7,7 @@ library(furrr)
 # Número de Músicas: ----
 
 read_html("https://www.vagalume.com.br/the-strokes/") %>% 
-  html_nodes(".nameMusic") %>% html_text() %>% 
+  html_elements(".nameMusic") %>% html_text() %>% 
   unique() %>% length()
 
 # Obtendo todas as letras de músicas ----
@@ -15,7 +15,7 @@ read_html("https://www.vagalume.com.br/the-strokes/") %>%
 get_lyric <- function(song_link){
   
   # Reading the html page
-  lyric <- read_html(paste0("https://www.vagalume.com.br", song_link)) %>% html_nodes("#lyrics")
+  lyric <- read_html(paste0("https://www.vagalume.com.br", song_link)) %>% html_elements("#lyrics")
   
   # Creating sep to replace linebreaks with ". "
   dummy <- xml_node(read_xml("<doc><span>. </span></doc>"), "span")
@@ -36,7 +36,7 @@ get_lyrics_links <- function(artist_link){
   page <- read_html(paste0("https://www.vagalume.com.br", artist_link))
   
   # Obtaining all the musics' links -
-  music_name_node <- page %>% html_nodes(".nameMusic")
+  music_name_node <- page %>% html_elements(".nameMusic")
   music_names <- music_name_node %>% html_text()
   music_links <- music_name_node %>% html_attr("href")
   
