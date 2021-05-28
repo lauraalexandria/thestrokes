@@ -18,10 +18,10 @@ get_lyric <- function(song_link){
   lyric <- read_html(paste0("https://www.vagalume.com.br", song_link)) %>% html_elements("#lyrics")
   
   # Creating sep to replace linebreaks with ". "
-  dummy <- xml_node(read_xml("<doc><span>. </span></doc>"), "span")
+  dummy <- html_element(read_xml("<doc><span>. </span></doc>"), "span")
   
   # Replacing line-breaks
-  xml_add_sibling(xml_nodes(lyric, "br"), dummy)
+  xml_add_sibling(html_elements(lyric, "br"), dummy)
   
   res <- lyric %>% html_text()
   

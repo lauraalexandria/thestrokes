@@ -44,6 +44,16 @@ div.bloco1 {
   border-radius: 10px;
 }
 
+div.metade {
+  width: 50%;
+  float: left;
+  text-align: justify;
+  padding: 1em;
+  background: rgba(143, 81, 249, 0.4);
+  color: black;
+  border: 5px solid white;
+  border-radius: 10px;
+
 </style>
 
 
@@ -62,8 +72,12 @@ stop_words <- stop_words %>% add_row(word = c("yeah", "gonna", "hey"))
 source("WebScraping.R")
 letras <- apply(musicas[,3], 1, get_lyric)
 musicas <- musicas %>% 
-  filter(!str_detect(SName, "[(]")) %>% 
-  mutate(letras = tolower(letras))
+  mutate(letras = tolower(letras)) %>% 
+  filter(!str_detect(SName, "[(]"))
+
+
+e_common(theme = "london")
+#opções de tema: london, tech-blue
 ```
 
 
@@ -106,8 +120,7 @@ num_por_musica  %>%
   e_histogram(n) %>% 
   e_tooltip(trigger = "axis", backgroundColor = "rgb(255,255,255,0.8)", 
             borderColor = '#333', borderWidth = 1,
-            textStyle = list(color = '#333')) %>% 
-  e_theme("sakura")
+            textStyle = list(color = '#333'))
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -119,21 +132,21 @@ maior_mus <- maior %>% pull(SName)
 maior_quant <- maior %>% pull(n)
 ```
 
-<div class = "container">
   
-<div class = "bloco1">
+<div class = "metade">
 Agora é ver se eu consigo deixar um do lado do outro...
 </div>
   
-<div class = "bloco1">
+<div class = "metade">
 Here, I use 3 subunits of size 4 (4x3=12). The last column is used for a plot. You can read more about the grid system [here](bootstrap grid system). I got this result showing the following code in my R Markdown document.
 </div>
 
-</div>
 
 # Proportion of Word in each song - é aqui que poderia entrar um ANÁLISE FATORIAL
 
 Foram usadas 1489 palavras diferentes em todas as músicas/ ainda tem que melhorar a tooltip aqui!
+
+In this analysis I select the 10 words more frequent and I summed the proportion of them in each song forming 2 variables, the first one with the 5 firsts and the second one with the remaining. Now I see that doesn't make sense. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 prop_por_musica <- musicas %>% select(c(2,4)) %>% 
@@ -280,7 +293,8 @@ gauge_trios <- function(sent){
   
   g1 <- e_charts() %>% # O outro modelo é mais bonitinho
   e_gauge(as.numeric((top_3[1,4]*100) %>% round(2)), 
-          paste0("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", top_3[1,1]))
+          paste0("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", top_3[1,1]),
+          z = 1)
 
   g2 <- e_charts() %>% 
   e_gauge(as.numeric((top_3[2,4]*100) %>% round(2)), 
@@ -358,7 +372,7 @@ gauge_trios("Surprise")
 gauge_trios("Trust")
 ```
 
-##
+## The Afinn Tecniche
 
 Other tecnique to analyse text
 
@@ -373,6 +387,8 @@ sent_num_por_mus <- musicas %>% select(c(2,4)) %>%
   inner_join(afinn) %>% 
   filter(word != "yeah")
 ```
+
+Ainda tenho que sumarisar o total de negatividade por música
 
 
 ```{r echo=FALSE, message = F}
@@ -404,6 +420,13 @@ tf_idf <- musicas %>% select(c(2,4)) %>%
   group_by(SName) %>% 
   count(word) %>% ungroup() %>% 
   bind_tf_idf(word, SName, n)
+
+tf_idf %>%          
+  e_chart() %>% 
+  e_histogram(tf_idf) %>% 
+  e_tooltip(backgroundColor = "rgba(255,255,255,0.8)", 
+            borderColor = '#333', borderWidth = 1,
+            textStyle = list(color = '#333'))
 
 tf_idf %>%          # O quanto isso faria sentido?
   e_chart(tf) %>% 

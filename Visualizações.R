@@ -21,10 +21,13 @@ library(echarts4r)
 # 1 - Tentar deixar a nuvem com formato específico;
 # 2 - Fazer Análise Fatorial com as palavras;
 # 4 - Lembrar de dividir por álbuns!!
-# 5 - Dá pra fazer mais alguma coisa com o tf-idf?
+# 5 - Tentar similaridade tf-idf contra score total de negatividade?
 
 ## OBSERVAÇÕES
 # 1 - Revisar as músicas do top3 de sadness
+
+## CORREÇÕES
+# 1 -Deixar as barras do tf-idf apenas por album
 
 data("stop_words")  # Fixando as stopwords
 stop_words <- stop_words %>% add_row(word = c("yeah", "gonna", "hey"))
