@@ -65,13 +65,14 @@ library(wordcloud2)
 library(textdata) 
 library(here)
 library(echarts4r)
+library(word2vec)
 
 data("stop_words")  # Fixando as stopwords
 stop_words <- stop_words %>% add_row(word = c("yeah", "gonna", "hey"))
 
 source("WebScraping.R")
-letras <- apply(musicas[,3], 1, get_lyric)
-musicas <- musicas %>% 
+letras <- apply(songs[,3], 1, get_lyric)
+songs <- songs %>% 
   mutate(letras = tolower(letras)) %>% 
   filter(!str_detect(SName, "[(]"))
 
@@ -88,7 +89,7 @@ I love The Strokes, and a WebScrap 82 songs of them
 # Cloud Words
 
 ```{r echo=FALSE, message=F, warning=F}
-contagem <- musicas %>% select(c(2,4)) %>%
+contagem <- songs %>% select(c(2,4)) %>%
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>%
   count(word)
@@ -109,13 +110,13 @@ contagem %>%
 # Number of words by Song
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-num_por_musica <- musicas %>% select(c(2,4)) %>% 
+num_por_song <- songs %>% select(c(2,4)) %>% 
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>%
   group_by(SName) %>% 
   count() %>% ungroup()
 
-num_por_musica  %>% 
+num_por_song  %>% 
   e_charts() %>%
   e_histogram(n) %>% 
   e_tooltip(trigger = "axis", backgroundColor = "rgb(255,255,255,0.8)", 
@@ -124,10 +125,10 @@ num_por_musica  %>%
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-menor <- num_por_musica %>% slice_min(order_by = n, n = 1)
+menor <- num_por_song %>% slice_min(order_by = n, n = 1)
 menor_mus <- menor %>% pull(SName)
 menor_quant <- menor %>% pull(n)
-maior <- num_por_musica %>% slice_max(order_by = n, n = 1)
+maior <- num_por_song %>% slice_max(order_by = n, n = 1)
 maior_mus <- maior %>% pull(SName)
 maior_quant <- maior %>% pull(n)
 ```
@@ -149,7 +150,7 @@ Foram usadas 1489 palavras diferentes em todas as músicas/ ainda tem que melhor
 In this analysis I select the 10 words more frequent and I summed the proportion of them in each song forming 2 variables, the first one with the 5 firsts and the second one with the remaining. Now I see that doesn't make sense. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-prop_por_musica <- musicas %>% select(c(2,4)) %>% 
+prop_por_song <- songs %>% select(c(2,4)) %>% 
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>%
   group_by(SName, word) %>% 
@@ -161,7 +162,7 @@ prop_por_musica <- musicas %>% select(c(2,4)) %>%
 
 top_10 <- contagem %>% arrange(desc(n)) %>% slice(1:10) %>% pull(word)
 
-prop_por_musica %>% 
+prop_por_song %>% 
   select(1, top_10) %>% 
   mutate(var1 = sum(time:love),
          var2 = sum(hard:night)) %>% 
@@ -181,12 +182,12 @@ prop_por_musica %>%
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 sentiments <- get_sentiments("nrc")
 
-musicas_e_sent <- musicas %>% select(c(2,4)) %>% 
+songs_e_sent <- songs %>% select(c(2,4)) %>% 
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>% inner_join(sentiments) %>% 
   mutate(sentiment = str_to_sentence(sentiment))
 
-musicas_e_sent %>% 
+songs_e_sent %>% 
   group_by(sentiment) %>% 
   count() %>% ungroup() %>% 
   e_charts(sentiment) %>% 
@@ -200,7 +201,7 @@ musicas_e_sent %>%
 Now you can choose a song
 
 ```{r include=FALSE, message = F}
-sent_por_mus <- musicas_e_sent %>% 
+sent_por_mus <- songs_e_sent %>% 
   group_by(SName, sentiment) %>% count() %>% 
   ungroup() %>% group_by(SName) %>% 
   mutate(prop = n/sum(n)) %>% ungroup()
@@ -210,12 +211,12 @@ sent_por_mus <- musicas_e_sent %>%
 ## {.tabset .tabset-fade .tabset-pills}
 
 ```{r include=FALSE, message = F}
-musicas_e_albuns <- musicas_e_sent %>% 
+songs_e_albuns <- songs_e_sent %>% 
   inner_join(albuns)
 
 prop_sent_by_song <- function(input_album){
   
-  musicas_e_albuns %>% 
+  songs_e_albuns %>% 
   filter(Album == input_album) %>% 
   group_by(SName, sentiment) %>% count() %>% 
   ungroup() %>% group_by(SName) %>% 
@@ -379,7 +380,7 @@ Other tecnique to analyse text
 ```{r echo=FALSE, message = F}
 afinn <- get_sentiments("afinn")
 
-sent_num_por_mus <- musicas %>% select(c(2,4)) %>% 
+sent_num_por_mus <- songs %>% select(c(2,4)) %>% 
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>%
   group_by(word) %>% 
@@ -414,7 +415,7 @@ sent_num_por_mus %>%
 # Term Frequency
 
 ```{r echo=FALSE, message = F}
-tf_idf <- musicas %>% select(c(2,4)) %>% 
+tf_idf <- songs %>% select(c(2,4)) %>% 
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>% 
   group_by(SName) %>% 
@@ -509,7 +510,7 @@ tf_idf_by_song("The New Abnormal")
 # Words Relationship
 
 ```{r echo=FALSE, message = F}
-duplas <- musicas %>% select(c(2,4)) %>% 
+duplas <- songs %>% select(c(2,4)) %>% 
   unnest_tokens(bigram, letras, token = "ngrams", n = 2) %>%
   separate(bigram, c("word1", "word2"), sep = " ") %>% 
   filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word)
@@ -533,6 +534,25 @@ ggraph(bigram_graph, layout = "fr") +
   theme_void()
 ```
 
+# Similarity
+
+```{r echo=FALSE, message = F}
+set.seed(123456789)
+
+token_songs <- songs %>% select(c(2,4)) %>%
+  unnest_tokens(word, letras) %>%
+  anti_join(stop_words)
+
+model <-word2vec(x = token_songs$word, type ="cbow",dim = 15, iter = 20)
+# o tipo também pode ser "skip-gram" 
+
+embedding <- as.matrix(model)
+embedding <- predict(model, c("beats"), type = "embedding") 
+
+predict(model,c("beats"),type ="nearest",top_n =5) # 5 palavras mais similares
+
+
+```
 
 
 
