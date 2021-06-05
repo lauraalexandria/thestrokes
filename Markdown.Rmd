@@ -536,6 +536,8 @@ ggraph(bigram_graph, layout = "fr") +
 
 # Similarity
 
+Primeira tentativa com word2vec que eu não achei tão legal o resultado
+
 ```{r echo=FALSE, message = F}
 set.seed(123456789)
 
@@ -554,6 +556,41 @@ predict(model,c("beats"),type ="nearest",top_n =5) # 5 palavras mais similares
 
 ```
 
+Cossine similarity (tryed to keep the 10 more common words in each song) e testar no lugar da freq, o td-idft
 
+
+```{r echo=FALSE, message = F}
+freq_by_song <- songs %>% select(c(2,4)) %>% # provavelmente posso apagar
+  unnest_tokens(word, letras) %>%
+  anti_join(stop_words) %>%
+  group_by(SName, word) %>% 
+  count() %>% 
+  ungroup() %>% group_by(SName) %>% 
+  #slice_max(order_by = n, n = 10) %>%  o cara usou muito mesmo
+  pivot_wider(1:3, names_from = SName, values_from = n, values_fill = 0)
+```
+
+
+O problema é que aqui a gente pega uma música e o sistema caça outras 5 iguais. Como faço para plotarrr
+
+```{r echo=FALSE, message = F}
+cosine_sim <- function(a, b) crossprod(a,b)/sqrt(crossprod(a)*crossprod(b))
+
+calc_cos_sim <- function(name,              
+                         freq = freq_by_song) {
+  
+  freq2 <- freq %>% select(-c(word, name))
+  
+  sapply(freq2, list) %>% 
+    map(cosine_sim, freq %>% pull(name)) %>% 
+    unlist() %>% 
+    as.data.frame() %>% 
+    rename(Similarity = ".") %>% 
+    slice_max(order_by = Similarity, n = 5)
+  
+}
+
+knitr::kable(calc_cos_sim("15 Minutes"))
+```
 
 
