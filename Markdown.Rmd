@@ -54,6 +54,17 @@ div.metade {
   border: 5px solid white;
   border-radius: 10px;
 
+.nav-pills > li > a {
+  color: rgba(143, 81, 249, 0.4);
+}
+
+.nav-pills > li.active > a, 
+.nav-pills > li.active > a:hover, 
+.nav-pills > li.active > a:focus {
+  color: white;
+  background-color: rgba(143, 81, 249, 0.4);
+}
+
 </style>
 
 
@@ -86,7 +97,7 @@ e_common(theme = "london")
 
 I love The Strokes, and a WebScrap 82 songs of them
 
-# Cloud Words
+# Word Clouds
 
 ```{r echo=FALSE, message=F, warning=F}
 contagem <- songs %>% select(c(2,4)) %>%
@@ -177,7 +188,7 @@ prop_por_song %>%
 ```
 
 
-# Sentiment Analisys
+# Sentiment Analysis
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 sentiments <- get_sentiments("nrc")
@@ -190,6 +201,7 @@ songs_e_sent <- songs %>% select(c(2,4)) %>%
 songs_e_sent %>% 
   group_by(sentiment) %>% 
   count() %>% ungroup() %>% 
+  arrange(n) %>% 
   e_charts(sentiment) %>% 
   e_bar(n, name = "Frequency", legend = F) %>% 
   e_flip_coords() %>% 
@@ -216,14 +228,22 @@ songs_e_albuns <- songs_e_sent %>%
 
 prop_sent_by_song <- function(input_album){
   
-  songs_e_albuns %>% 
+  df <- songs_e_albuns %>% 
   filter(Album == input_album) %>% 
   group_by(SName, sentiment) %>% count() %>% 
   ungroup() %>% group_by(SName) %>% 
-  mutate(prop = n/sum(n) %>% round(2)) %>% 
+  mutate(prop = round(n/sum(n), 2)) %>% 
+    ungroup()
+  
+  principal_sentimento <- df %>% 
+    filter(prop == max(prop)) %>% 
+    pull(SName)
+  
+  df %>% group_by(SName) %>% 
   e_charts(sentiment, timeline = TRUE) %>% 
   e_pie(prop, legend = F, radius = c("45%", "70%")) %>% 
-    e_timeline_opts(
+  #e_grid(left = "30%")  %>% 
+  e_timeline_opts(
         top = 'middle',
         right = '100%',
         orient = "vertical",
@@ -235,7 +255,8 @@ prop_sent_by_song <- function(input_album){
   e_tooltip("item", 
             backgroundColor = "rgba(255,255,255,0.8)", 
             borderColor = '#333', borderWidth = 1,
-            textStyle = list(color = '#333'))
+            textStyle = list(color = '#333')) %>% 
+    e_text_g(principal_sentimento) # algum erro aqui
   
 }
 ```
@@ -293,16 +314,16 @@ gauge_trios <- function(sent){
   slice_max(prop, n = 3)
   
   g1 <- e_charts() %>% # O outro modelo é mais bonitinho
-  e_gauge(as.numeric((top_3[1,4]*100) %>% round(2)), 
+  e_gauge(as.numeric((top_3[1,4]*100) %>% round(1)), 
           paste0("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", top_3[1,1]),
           z = 1)
 
   g2 <- e_charts() %>% 
-  e_gauge(as.numeric((top_3[2,4]*100) %>% round(2)), 
+  e_gauge(as.numeric((top_3[2,4]*100) %>% round(1)), 
           paste0("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", top_3[2,1])) 
 
   g3 <- e_charts() %>% 
-  e_gauge(as.numeric((top_3[3,4]*100) %>% round(2)), 
+  e_gauge(as.numeric((top_3[3,4]*100) %>% round(1)), 
           paste0("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", top_3[3,1])) 
 
   e_arrange(g1, g2, g3, rows = 1, cols = 3)

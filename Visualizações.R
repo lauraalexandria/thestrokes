@@ -24,6 +24,10 @@ library(echarts4r)
 # 4 - Lembrar de dividir por álbuns!!
 # 5 - Tentar similaridade tf-idf contra score total de negatividade?
 
+## FUNÇÃO PAIRWISE_COR DO PACOTE WIDYR
+## Album similarity com a função trans_venn
+## Outra técnica bacana LDA
+
 ## OBSERVAÇÕES
 # 1 - Revisar as músicas do top3 de sadness
 
