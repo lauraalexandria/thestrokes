@@ -1,6 +1,7 @@
 ---
 output: 
   html_document: 
+    code_folding: "hide"
     df_print: default
     toc: yes
     toc_depth: 1
@@ -69,7 +70,7 @@ div.metade {
 
 
 
-```{r include=FALSE, message=F, warning=F}
+```{r message=F, warning=F}
 library(tidyverse)
 library(tidytext)
 library(wordcloud2)
@@ -77,15 +78,34 @@ library(textdata)
 library(here)
 library(echarts4r)
 library(word2vec)
+library(crosstalk)
+library(DT)
 
 data("stop_words")  # Fixando as stopwords
 stop_words <- stop_words %>% add_row(word = c("yeah", "gonna", "hey"))
 
 source("WebScraping.R")
+source("DadosSpotify.R")
+
 letras <- apply(songs[,3], 1, get_lyric)
+
 songs <- songs %>% 
   mutate(letras = tolower(letras)) %>% 
-  filter(!str_detect(SName, "[(]"))
+  filter(!str_detect(SName, "ep Version|early")) %>% # Evitar nomes repetidos;
+  mutate(SName = case_when(                          # Corrigindo nomes;
+     SName == "Mercy, Mercy Me" ~ "Mercy Mercy Me (The Ecology)",
+     SName == 'Hawaii Aloha' ~ 'Hawaii',
+     SName == "Why Are Sunday's So Depressing" ~ "Why Are Sundays So Depressing",
+     SName == "Oblivious" ~ "Oblivius",
+     T ~ SName),
+    SName = str_to_title(SName)) %>% 
+  left_join(dados_spotify, by = c("SName" = "track_name")) %>% 
+  mutate(album_name = case_when(
+     is.na(album_name) ~ "Others",
+     album_name == "Juicebox" ~ "Others",
+     album_name == "Heart In A Cage" ~ "Others",
+     album_name == "You Only Live Once/Mercy Mercy Me" ~ "Others",
+     T ~ album_name))
 
 
 e_common(theme = "london")
@@ -99,7 +119,7 @@ I love The Strokes, and a WebScrap 82 songs of them
 
 # Word Clouds
 
-```{r echo=FALSE, message=F, warning=F}
+```{r message=F, warning=F}
 contagem <- songs %>% select(c(2,4)) %>%
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>%
@@ -120,7 +140,7 @@ contagem %>%
 
 # Number of words by Song
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 num_por_song <- songs %>% select(c(2,4)) %>% 
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>%
@@ -135,7 +155,7 @@ num_por_song  %>%
             textStyle = list(color = '#333'))
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 menor <- num_por_song %>% slice_min(order_by = n, n = 1)
 menor_mus <- menor %>% pull(SName)
 menor_quant <- menor %>% pull(n)
@@ -160,7 +180,7 @@ Foram usadas 1489 palavras diferentes em todas as músicas/ ainda tem que melhor
 
 In this analysis I select the 10 words more frequent and I summed the proportion of them in each song forming 2 variables, the first one with the 5 firsts and the second one with the remaining. Now I see that doesn't make sense. 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 prop_por_song <- songs %>% select(c(2,4)) %>% 
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>%
@@ -190,10 +210,10 @@ prop_por_song %>%
 
 # Sentiment Analysis
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 sentiments <- get_sentiments("nrc")
 
-songs_e_sent <- songs %>% select(c(2,4)) %>% 
+songs_e_sent <- songs %>% select(c(2, 4, 5)) %>% 
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>% inner_join(sentiments) %>% 
   mutate(sentiment = str_to_sentence(sentiment))
@@ -212,51 +232,81 @@ songs_e_sent %>%
 
 Now you can choose a song
 
-```{r include=FALSE, message = F}
+```{r message = F}
 sent_por_mus <- songs_e_sent %>% 
-  group_by(SName, sentiment) %>% count() %>% 
+  group_by(SName, album_name, sentiment) %>% count() %>% 
   ungroup() %>% group_by(SName) %>% 
-  mutate(prop = n/sum(n)) %>% ungroup()
+  mutate(prop = round(n/sum(n), 3)) %>% 
+  ungroup()
 ```
 
 
 ## {.tabset .tabset-fade .tabset-pills}
 
-```{r include=FALSE, message = F}
-songs_e_albuns <- songs_e_sent %>% 
-  inner_join(albuns)
+```{r message = F}
+# prop_sent_by_song <- function(input_album){
+#   
+#   df <- songs_e_albuns %>% 
+#   filter(Album == input_album) %>% 
+#   group_by(SName, sentiment) %>% count() %>% 
+#   ungroup() %>% group_by(SName) %>% 
+#   mutate(prop = round(n/sum(n), 2)) %>% 
+#     ungroup()
+#   
+#   principal_sentimento <- df %>% 
+#     filter(prop == max(prop)) %>% 
+#     pull(sentiment)
+#   
+#   df %>% group_by(SName) %>% 
+#   e_charts(sentiment, timeline = TRUE) %>% 
+#   e_pie(prop, legend = F, radius = c("45%", "70%")) %>% 
+#   #e_grid(left = "30%")  %>% 
+#   e_timeline_opts(
+#         top = 'middle',
+#         right = '100%',
+#         orient = "vertical",
+#         label = list(position = 'left'),
+#         controlStyle = list(showPlayBtn = F, itemSize = 0, itemGap = 110),
+#         lineStyle = list(show = F),
+#         itemStyle = list(color = 'rgba(128, 128, 128, 0.3)')
+#     ) %>%
+#   e_tooltip("item", 
+#             backgroundColor = "rgba(255,255,255,0.8)", 
+#             borderColor = '#333', borderWidth = 1,
+#             textStyle = list(color = '#333')) %>% 
+#     e_text_g(right = 385, top = 250, z = -999,
+#              style = list(text = principal_sentimento, 
+#                           width = 450, opacity = .6)
+#              ) 
+#   
+# }
 
 prop_sent_by_song <- function(input_album){
   
-  df <- songs_e_albuns %>% 
-  filter(Album == input_album) %>% 
-  group_by(SName, sentiment) %>% count() %>% 
-  ungroup() %>% group_by(SName) %>% 
-  mutate(prop = round(n/sum(n), 2)) %>% 
-    ungroup()
+  ordem_sent <- c("Positive", "Joy", "Trust", "Surprise", "Anticipation",
+                  "Disgust", "Fear", "Anger", "Sadness", "Negative")
   
-  principal_sentimento <- df %>% 
-    filter(prop == max(prop)) %>% 
-    pull(SName)
+  df <- sent_por_mus %>% 
+    mutate(sentiment = factor(sentiment, levels = ordem_sent)) %>% 
+    filter(album_name == input_album) %>% 
+    # group_by(SName, sentiment) %>% count() %>% 
+    # ungroup() %>% 
+    group_by(SName) %>% 
+    mutate(n_sentiments = n()) %>% 
+    arrange(desc(n_sentiments), sentiment)
   
-  df %>% group_by(SName) %>% 
-  e_charts(sentiment, timeline = TRUE) %>% 
-  e_pie(prop, legend = F, radius = c("45%", "70%")) %>% 
-  #e_grid(left = "30%")  %>% 
-  e_timeline_opts(
-        top = 'middle',
-        right = '100%',
-        orient = "vertical",
-        label = list(position = 'left'),
-        controlStyle = list(showPlayBtn = F, itemSize = 0, itemGap = 110),
-        lineStyle = list(show = F),
-        itemStyle = list(color = 'rgba(128, 128, 128, 0.3)')
-    ) %>%
-  e_tooltip("item", 
-            backgroundColor = "rgba(255,255,255,0.8)", 
-            borderColor = '#333', borderWidth = 1,
-            textStyle = list(color = '#333')) %>% 
-    e_text_g(principal_sentimento) # algum erro aqui
+  df %>% 
+    group_by(sentiment) %>% 
+    e_charts(SName) %>% 
+    e_bar(prop, stack = "grp") %>%
+    e_y_axis(max = 1) %>% 
+    e_flip_coords() %>%
+    e_grid(left = "20%") %>% 
+    e_color(c("#12753F", "#4D976F", "#88BA9F", "#C3DCCF", "#EED8D8",
+              "#DEB1B1", "#CD8B8B", "#BD6464", "#AC3D3D", "#9C1717")) %>% 
+    e_tooltip(trigger = "axis", backgroundColor = "rgba(255,255,255,0.8)",
+              borderColor = '#333', borderWidth = 1, 
+              textStyle = list(color = '#333'))
   
 }
 ```
@@ -277,7 +327,7 @@ prop_sent_by_song("Room On Fire")
 ### First Impressions of Earth
 
 ```{r echo=FALSE}
-prop_sent_by_song("First Impressions of Earth")
+prop_sent_by_song("First Impressions Of Earth")
 ```
 
 ### Angles
@@ -295,7 +345,7 @@ prop_sent_by_song("Comedown Machine")
 ### Future Present Past
 
 ```{r echo=FALSE}
-prop_sent_by_song("Future Present Past [EP]")
+prop_sent_by_song("Future Present Past")
 ```
 
 ### The New Abnormal
@@ -303,27 +353,33 @@ prop_sent_by_song("Future Present Past [EP]")
 ```{r echo=FALSE}
 prop_sent_by_song("The New Abnormal")
 ```
+
+### Others
+
+```{r echo=FALSE}
+prop_sent_by_song("Others")
+```
  
 ## {.tabset .tabset-fade .tabset-pills}
 
-```{r include=FALSE}
+```{r}
 gauge_trios <- function(sent){
   
   top_3 <- sent_por_mus %>% 
-  filter(sentiment == sent) %>% 
-  slice_max(prop, n = 3)
+    filter(sentiment == sent) %>% 
+    slice_max(prop, n = 3)
   
   g1 <- e_charts() %>% # O outro modelo é mais bonitinho
-  e_gauge(as.numeric((top_3[1,4]*100) %>% round(1)), 
+  e_gauge(as.numeric((top_3[1,5]*100) %>% round(1)), 
           paste0("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", top_3[1,1]),
           z = 1)
 
   g2 <- e_charts() %>% 
-  e_gauge(as.numeric((top_3[2,4]*100) %>% round(1)), 
+  e_gauge(as.numeric((top_3[2,5]*100) %>% round(1)), 
           paste0("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", top_3[2,1])) 
 
   g3 <- e_charts() %>% 
-  e_gauge(as.numeric((top_3[3,4]*100) %>% round(1)), 
+  e_gauge(as.numeric((top_3[3,5]*100) %>% round(1)), 
           paste0("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", top_3[3,1])) 
 
   e_arrange(g1, g2, g3, rows = 1, cols = 3)
@@ -394,11 +450,12 @@ gauge_trios("Surprise")
 gauge_trios("Trust")
 ```
 
+
 ## The Afinn Tecniche
 
 Other tecnique to analyse text
 
-```{r echo=FALSE, message = F}
+```{r message = F}
 afinn <- get_sentiments("afinn")
 
 sent_num_por_mus <- songs %>% select(c(2,4)) %>% 
@@ -413,7 +470,7 @@ sent_num_por_mus <- songs %>% select(c(2,4)) %>%
 Ainda tenho que sumarisar o total de negatividade por música
 
 
-```{r echo=FALSE, message = F}
+```{r message = F}
 sent_num_por_mus %>% 
   e_charts() %>% 
   e_histogram(value) %>% 
@@ -422,7 +479,7 @@ sent_num_por_mus %>%
             textStyle = list(color = '#333'))
 ```
 
-```{r echo=FALSE, message = F}
+```{r message = F}
 sent_num_por_mus %>% 
   e_charts(value) %>% 
   e_scatter(n, name = "Frequency") %>% 
@@ -435,11 +492,11 @@ sent_num_por_mus %>%
 
 # Term Frequency
 
-```{r echo=FALSE, message = F}
-tf_idf <- songs %>% select(c(2,4)) %>% 
+```{r message = F}
+tf_idf <- songs %>% select(c(2, 4, 5)) %>% 
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>% 
-  group_by(SName) %>% 
+  group_by(SName, album_name) %>% 
   count(word) %>% ungroup() %>% 
   bind_tf_idf(word, SName, n)
 
@@ -460,16 +517,16 @@ tf_idf %>%          # O quanto isso faria sentido?
 
 ## {.tabset .tabset-fade .tabset-pills}
 
-```{r include=FALSE, message = F}
-tf_idf_by_song <- function(album){
+```{r message = F}
+tf_idf_by_song <- function(input_album){
   
   tf_idf %>%
-    inner_join(albuns) %>% 
-    filter(Album == album) %>% 
+    filter(album_name == input_album) %>% 
     slice_max(tf_idf, n = 10) %>% 
     group_by(SName) %>% 
     e_charts(word, timeline = T) %>% 
-    e_bar(tf_idf, legend = F, name = "Ajusted Frequency")%>% 
+    e_bar(tf_idf, legend = F, name = "Ajusted Frequency") %>%
+    e_grid(left = "30%") %>% 
     e_timeline_opts(top = 'middle',
                     right = '100%',
                     orient = "vertical",
@@ -501,7 +558,7 @@ tf_idf_by_song("Room On Fire")
 ### First Impressions of Earth
 
 ```{r echo=FALSE}
-tf_idf_by_song("First Impressions of Earth")
+tf_idf_by_song("First Impressions Of Earth")
 ```
 
 ### Angles
@@ -519,7 +576,7 @@ tf_idf_by_song("Comedown Machine")
 ### Future Present Past
 
 ```{r echo=FALSE}
-tf_idf_by_song("Future Present Past [EP]")
+tf_idf_by_song("Future Present Past")
 ```
 
 ### The New Abnormal
@@ -528,38 +585,44 @@ tf_idf_by_song("Future Present Past [EP]")
 tf_idf_by_song("The New Abnormal")
 ```
 
-# Words Relationship
+### Others
 
-```{r echo=FALSE, message = F}
-duplas <- songs %>% select(c(2,4)) %>% 
-  unnest_tokens(bigram, letras, token = "ngrams", n = 2) %>%
-  separate(bigram, c("word1", "word2"), sep = " ") %>% 
-  filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word)
-
-sankey <- duplas %>% group_by(word1, word2) %>% count() %>% ungroup()
-
-library(ggraph)
-library(igraph)
-
-bigram_graph <- sankey %>%
-  filter(n > 5) %>%
-  igraph::graph_from_data_frame()
-
-a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
-
-ggraph(bigram_graph, layout = "fr") +
-  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
-                 arrow = a, end_cap = circle(.07, 'inches')) +
-  geom_node_point(color = "lightblue", size = 5) +
-  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
-  theme_void()
+```{r echo=FALSE}
+tf_idf_by_song("Others")
 ```
+
+<!-- # Words Relationship -->
+
+<!-- ```{r echo=FALSE, message = F} -->
+<!-- duplas <- songs %>% select(c(2,4)) %>%  -->
+<!--   unnest_tokens(bigram, letras, token = "ngrams", n = 2) %>% -->
+<!--   separate(bigram, c("word1", "word2"), sep = " ") %>%  -->
+<!--   filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word) -->
+
+<!-- sankey <- duplas %>% group_by(word1, word2) %>% count() %>% ungroup() -->
+
+<!-- library(ggraph) -->
+<!-- library(igraph) -->
+
+<!-- bigram_graph <- sankey %>% -->
+<!--   filter(n > 5) %>% -->
+<!--   igraph::graph_from_data_frame() -->
+
+<!-- a <- grid::arrow(type = "closed", length = unit(.15, "inches")) -->
+
+<!-- ggraph(bigram_graph, layout = "fr") + -->
+<!--   geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, -->
+<!--                  arrow = a, end_cap = circle(.07, 'inches')) + -->
+<!--   geom_node_point(color = "lightblue", size = 5) + -->
+<!--   geom_node_text(aes(label = name), vjust = 1, hjust = 1) + -->
+<!--   theme_void() -->
+<!-- ``` -->
 
 # Similarity
 
 Primeira tentativa com word2vec que eu não achei tão legal o resultado
 
-```{r echo=FALSE, message = F}
+```{r message = F}
 set.seed(123456789)
 
 token_songs <- songs %>% select(c(2,4)) %>%
@@ -577,10 +640,26 @@ predict(model,c("beats"),type ="nearest",top_n =5) # 5 palavras mais similares
 
 ```
 
-Cossine similarity (tryed to keep the 10 more common words in each song) e testar no lugar da freq, o td-idft
+```{r}
+library(d3scatter)
+
+shared_mtcars <- SharedData$new(mtcars)
+bscols(widths = c(3,NA,NA),
+  list(
+    filter_checkbox("cyl", "Cylinders", shared_mtcars, ~cyl, inline = TRUE),
+    filter_slider("hp", "Horsepower", shared_mtcars, ~hp, width = "100%"),
+    filter_select("auto", "Automatic", shared_mtcars, ~ifelse(am == 0, "Yes", "No"))
+  ),
+  d3scatter(shared_mtcars, ~wt, ~mpg, ~factor(cyl), width="100%", height=250),
+  d3scatter(shared_mtcars, ~hp, ~qsec, ~factor(cyl), width="100%", height=250)
+)
+```
 
 
-```{r echo=FALSE, message = F}
+Cossine similarity (tried to keep the 10 more common words in each song) e testar no lugar da freq, o td-idft
+
+
+```{r message = F}
 freq_by_song <- songs %>% select(c(2,4)) %>% # provavelmente posso apagar
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>%
@@ -594,11 +673,10 @@ freq_by_song <- songs %>% select(c(2,4)) %>% # provavelmente posso apagar
 
 O problema é que aqui a gente pega uma música e o sistema caça outras 5 iguais. Como faço para plotarrr
 
-```{r echo=FALSE, message = F}
+```{r message = F}
 cosine_sim <- function(a, b) crossprod(a,b)/sqrt(crossprod(a)*crossprod(b))
 
-calc_cos_sim <- function(name,              
-                         freq = freq_by_song) {
+calc_cos_sim <- function(name, freq = freq_by_song) {
   
   freq2 <- freq %>% select(-c(word, name))
   
@@ -606,12 +684,22 @@ calc_cos_sim <- function(name,
     map(cosine_sim, freq %>% pull(name)) %>% 
     unlist() %>% 
     as.data.frame() %>% 
-    rename(Similarity = ".") %>% 
-    slice_max(order_by = Similarity, n = 5)
+    rename(Similarity = ".")
+    # slice_max(order_by = Similarity, n = 5)
   
 }
 
-knitr::kable(calc_cos_sim("15 Minutes"))
+# knitr::kable(calc_cos_sim("15 Minutes"))
+```
+
+```{r}
+# teste <- calc_cos_sim("15 Minutes")
+# shared_demo <- SharedData$new(teste)
+# 
+# filter_select(
+#   id = "id-selector", label = "ID", 
+#   sharedData = shared_demo
+# )
 ```
 
 
