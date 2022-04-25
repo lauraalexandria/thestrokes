@@ -618,6 +618,160 @@ tf_idf_by_song("Others")
 <!--   theme_void() -->
 <!-- ``` -->
 
+# Dados Spotify {.tabset .tabset-fade .tabset-pills}
+
+```{r}
+boxplot_por_album <- function(var){
+  
+  # Ainda estressada com os labels do eixo x;
+  # E as tooltips com Is This It em tudo??
+  
+  songs %>% 
+    pivot_wider(id_cols = SName, names_from = album_name, values_from = !!sym(var)) %>% 
+    e_charts() %>% 
+    e_boxplot(`Is This It`) %>% 
+    e_boxplot(`Room On Fire`) %>% 
+    e_boxplot(`First Impressions Of Earth`) %>% 
+    e_boxplot(`Angles`) %>% 
+    e_boxplot(`Comedown Machine`) %>% 
+    e_boxplot(`Future Present Past`) %>% 
+    e_boxplot(`The New Abnormal`) %>% 
+    e_boxplot(`Others`) %>%
+    e_color("#AC3D3D") %>% 
+    e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
+              borderColor = '#333', borderWidth = 1,
+              textStyle = list(color = '#333')) %>% 
+    e_x_axis(axisLabel = list(fontSize = 5)) # %>% 
+    # e_y_axis(type ='category') %>% e_x_axis(type ='value')
+  
+}
+
+top10var_por_album <- function(var){
+  
+  # Era para estar em outra ordem...
+  # Acho que só vou colocar um do lado do outro
+  
+  songs %>% 
+    drop_na() %>%
+    mutate(Var = !!sym(var)) %>% 
+    arrange(Var) %>%
+    slice(1:10, (n() - 9):n()) %>% 
+    mutate(Top = rep(c("Menores", "Maiores"), each = 10)) %>% 
+    group_by(album_name) %>% 
+    e_charts(SName) %>% 
+    e_bar(Var, stack = "grp") %>% 
+    e_flip_coords() %>% 
+    e_labels(position = "right") %>% 
+    e_mark_line(data = list(yAxis = 9), title = "Divisão") %>% 
+    e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
+              borderColor = '#333', borderWidth = 1,
+              textStyle = list(color = '#333'))
+  
+  songs %>% 
+    drop_na() %>%
+    mutate(Var = !!sym(var)) %>% 
+    arrange(Var) %>%
+    slice(1:10, (n() - 9):n()) %>% 
+    mutate(Top = rep(c("Menores", "Maiores"), each = 10)) %>% 
+    group_by(album_name) %>% 
+    e_charts(SName) %>% 
+    e_bar(Var, stack = "grp") %>% 
+    e_flip_coords() %>% 
+    e_labels(position = "right") %>% 
+    e_mark_line(data = list(yAxis = 9), title = "Divisão") %>% 
+    e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
+              borderColor = '#333', borderWidth = 1,
+              textStyle = list(color = '#333'))
+  
+}
+
+# top10var_por_album <- function(var){
+#   
+#   # Era para estar em outra ordem...
+#   
+#   songs %>% 
+#     drop_na() %>%
+#     mutate(Var = !!sym(var)) %>% 
+#     arrange(Var) %>%
+#     slice(1:10, (n() - 9):n()) %>% 
+#     mutate(Top = rep(c("Menores", "Maiores"), each = 10),
+#            n = c(1:10, 10:1) %>% as.factor()) %>% 
+#     group_by(Top) %>% 
+#     e_charts(n, timeline = T) %>% 
+#     e_bar(Var, stack = "grp", name = SName) %>% 
+#     e_flip_coords() %>% 
+#     e_labels(position = "right") %>% 
+#     e_y_axis(show = F) %>% 
+#     e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
+#               borderColor = '#333', borderWidth = 1,
+#               textStyle = list(color = '#333')) %>% 
+#     e_timeline_opts(top = 'middle',
+#                     right = '100%',
+#                     orient = "vertical",
+#                     label = list(position = 'left'),
+#                     controlStyle = list(showPlayBtn = F, itemSize = 0, itemGap = 110),
+#                     lineStyle = list(show = F),
+#                     itemStyle = list(color = 'rgba(128, 128, 128, 0.3)'))
+#   
+# }
+```
+
+## Dançabilidade
+
+```{r echo=FALSE}
+boxplot_por_album("danceability")
+top10var_por_album("danceability")
+```
+
+## Energia
+
+```{r echo=FALSE}
+boxplot_por_album("energy")
+top10var_por_album("energy")
+```
+
+## Volume
+
+```{r echo=FALSE}
+boxplot_por_album("loudness")
+top10var_por_album("loudness")
+```
+
+## Falado
+
+```{r echo=FALSE}
+boxplot_por_album("speechiness")
+top10var_por_album("speechiness")
+```
+
+## Acústico
+
+```{r echo=FALSE}
+boxplot_por_album("acousticness")
+top10var_por_album("acousticness")
+```
+
+## Instrumentalidade
+
+```{r echo=FALSE}
+boxplot_por_album("instrumentalness")
+top10var_por_album("instrumentalness")
+```
+
+## Valência
+
+```{r echo=FALSE}
+boxplot_por_album("valence")
+top10var_por_album("valence")
+```
+
+## Tempo 
+
+```{r echo=FALSE}
+boxplot_por_album("tempo")
+top10var_por_album("tempo")
+```
+
 # Similarity
 
 Primeira tentativa com word2vec que eu não achei tão legal o resultado
