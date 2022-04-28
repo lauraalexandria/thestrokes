@@ -869,11 +869,12 @@ calc_cos_sim <- function(name, freq = freq_by_song) {
 # knitr::kable(calc_cos_sim("15 Minutes"))
 similaridades <- mapply(calc_cos_sim, freq_by_song %>% names() %>% .[-1]) %>% 
   bind_cols() %>% 
-  pivot_longer(1:85, names_to = "song1", values_to = "Similaridade") %>% 
-  mutate(song1 = str_remove(song1, ".Similarity"),
-         song2 = freq_by_song %>% names() %>% .[-1] %>% rep(each = 85),
+  pivot_longer(1:85, names_to = "Song1", values_to = "Similaridade") %>% 
+  mutate(Song1 = str_remove(Song1, ".Similarity"),
+         Song2 = freq_by_song %>% names() %>% .[-1] %>% rep(each = 85),
          Similaridade = round(Similaridade, 3)) %>% 
-  filter(Similaridade != 1)
+  filter(Similaridade != 1) %>% 
+  relocate(Similaridade, .after = last_col())
 
 ```
 
@@ -884,14 +885,36 @@ bscols(widths = c(3, NA),
 
   list(
     filter_select("song1", "Escolha a Música", 
-                  shared_similaridades, ~song1, multiple = F)
+                  shared_similaridades, ~Song1, multiple = F)
   ),
 
-  datatable(shared_similaridades)
+  datatable(shared_similaridades, width = 500,
+            class = "cell-border hover row-border"#,
+            # options = list(searching = FALSE) - não tá deixando filtrar??
+            )
 
 )
 ```
 
 ## Similaridade entre as variáveis
 
+Diferente da outra função, por que as colunas não são as músicas;
+Aqui já pode ser distância também;
+
+```{r}
+distancias <- function(name, data = songs){
+  
+  
+  
+}
+
+similaridades <- mapply(calc_cos_sim, freq_by_song %>% names() %>% .[-1]) %>% 
+  bind_cols() %>% 
+  pivot_longer(1:85, names_to = "Song1", values_to = "Similaridade") %>% 
+  mutate(Song1 = str_remove(Song1, ".Similarity"),
+         Song2 = freq_by_song %>% names() %>% .[-1] %>% rep(each = 85),
+         Similaridade = round(Similaridade, 3)) %>% 
+  filter(Similaridade != 1) %>% 
+  relocate(Similaridade, .after = last_col())
+```
 
