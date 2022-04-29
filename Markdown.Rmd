@@ -81,6 +81,7 @@ library(word2vec)
 library(crosstalk)
 library(DT)
 library(plotly)
+library(factoextra)
 
 data("stop_words")  # Fixando as stopwords
 stop_words <- stop_words %>% add_row(word = c("yeah", "gonna", "hey"))
@@ -902,19 +903,47 @@ Diferente da outra função, por que as colunas não são as músicas;
 Aqui já pode ser distância também;
 
 ```{r}
-distancias <- function(name, data = songs){
-  
-  
-  
-}
+distancias <- get_dist(songs %>% 
+                         column_to_rownames("SName") %>% 
+                         select(5:13) %>% drop_na()) %>% 
+  as.matrix() %>% 
+  as.data.frame() %>% 
+  rownames_to_column("Song1") %>% 
+  pivot_longer(2:74, names_to = "Song2", values_to = "Distância") %>% 
+  filter(`Distância` != 0)
 
-similaridades <- mapply(calc_cos_sim, freq_by_song %>% names() %>% .[-1]) %>% 
-  bind_cols() %>% 
-  pivot_longer(1:85, names_to = "Song1", values_to = "Similaridade") %>% 
-  mutate(Song1 = str_remove(Song1, ".Similarity"),
-         Song2 = freq_by_song %>% names() %>% .[-1] %>% rep(each = 85),
-         Similaridade = round(Similaridade, 3)) %>% 
-  filter(Similaridade != 1) %>% 
-  relocate(Similaridade, .after = last_col())
+shared_distancias <- SharedData$new(distancias)
+
+bscols(widths = c(3, NA),
+
+  list(
+    filter_select("song1", "Escolha a Música", 
+                  shared_distancias, ~Song1, multiple = F)
+  ),
+
+  datatable(shared_distancias, width = 500,
+            class = "cell-border hover row-border"#,
+            # options = list(searching = FALSE) - não tá deixando filtrar??
+            )
+
+)
+
 ```
+
+```{r}
+# Melhorar bastante aqui...
+
+similaridades %>% 
+  inner_join(distancias) %>% 
+  mutate(Dupla = paste(Song1, Song2, sep = " vs ")) %>% 
+  e_chart(Similaridade) %>% 
+  e_scatter(`Distância`) %>% 
+  e_tooltip(trigger = "axis", 
+            formatter = e_tooltip_pointer_formatter("currency"),
+            axisPointer = list(type = "cross"),
+            backgroundColor = "rgb(255,255,255,0.8)", 
+            borderColor = '#333', borderWidth = 1,
+            textStyle = list(color = '#333'))
+```
+
 
