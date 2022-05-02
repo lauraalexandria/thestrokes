@@ -816,7 +816,7 @@ bscols(widths = c(3, NA),
 
 Primeira tentativa com word2vec que eu não achei tão legal o resultado
 
-```{r message = F}
+```{r eval=FALSE, message=FALSE, include=FALSE}
 set.seed(123456789)
 
 token_songs <- songs %>% select(c(2,4)) %>%
@@ -837,6 +837,7 @@ predict(model,c("beats"),type ="nearest",top_n =5) # 5 palavras mais similares
 
 Cossine similarity (tried to keep the 10 more common words in each song) e testar no lugar da freq, o td-idft
 
+O problema é que aqui a gente pega uma música e o sistema caça outras 5 iguais. Como faço para plotarrr
 
 ```{r message = F}
 freq_by_song <- songs %>% select(c(2,4)) %>% # provavelmente posso apagar
@@ -847,12 +848,7 @@ freq_by_song <- songs %>% select(c(2,4)) %>% # provavelmente posso apagar
   ungroup() %>% group_by(SName) %>% 
   #slice_max(order_by = n, n = 10) %>%  o cara usou muito mesmo
   pivot_wider(1:3, names_from = SName, values_from = n, values_fill = 0)
-```
 
-
-O problema é que aqui a gente pega uma música e o sistema caça outras 5 iguais. Como faço para plotarrr
-
-```{r message = F}
 cosine_sim <- function(a, b) crossprod(a,b)/sqrt(crossprod(a)*crossprod(b))
 
 calc_cos_sim <- function(name, freq = freq_by_song) {
@@ -867,7 +863,6 @@ calc_cos_sim <- function(name, freq = freq_by_song) {
   
 }
 
-# knitr::kable(calc_cos_sim("15 Minutes"))
 similaridades <- mapply(calc_cos_sim, freq_by_song %>% names() %>% .[-1]) %>% 
   bind_cols() %>% 
   pivot_longer(1:85, names_to = "Song1", values_to = "Similaridade") %>% 
@@ -877,16 +872,15 @@ similaridades <- mapply(calc_cos_sim, freq_by_song %>% names() %>% .[-1]) %>%
   filter(Similaridade != 1) %>% 
   relocate(Similaridade, .after = last_col())
 
-```
-
-```{r}
 shared_similaridades <- SharedData$new(similaridades)
 
 bscols(widths = c(3, NA),
 
   list(
-    filter_select("song1", "Escolha a Música", 
-                  shared_similaridades, ~Song1, multiple = F)
+    filter_select("song1", "Escolha a 1° Música", 
+                  shared_similaridades, ~Song1, multiple = F),
+    filter_select("song2", "Escolha a 2° Música", 
+                  shared_similaridades, ~Song2, multiple = F)
   ),
 
   datatable(shared_similaridades, width = 500,
@@ -910,15 +904,18 @@ distancias <- get_dist(songs %>%
   as.data.frame() %>% 
   rownames_to_column("Song1") %>% 
   pivot_longer(2:74, names_to = "Song2", values_to = "Distância") %>% 
-  filter(`Distância` != 0)
+  filter(`Distância` != 0) %>% 
+  mutate(`Distância` = round(`Distância`, 2))
 
 shared_distancias <- SharedData$new(distancias)
 
 bscols(widths = c(3, NA),
 
   list(
-    filter_select("song1", "Escolha a Música", 
-                  shared_distancias, ~Song1, multiple = F)
+    filter_select("song1", "Escolha a 1° Música", 
+                  shared_similaridades, ~Song1, multiple = F),
+    filter_select("song2", "Escolha a 2° Música", 
+                  shared_similaridades, ~Song2, multiple = F)
   ),
 
   datatable(shared_distancias, width = 500,
@@ -930,20 +927,47 @@ bscols(widths = c(3, NA),
 
 ```
 
-```{r}
-# Melhorar bastante aqui...
+O esperado era existir alguma correlação negativa
 
+```{r}
 similaridades %>% 
   inner_join(distancias) %>% 
   mutate(Dupla = paste(Song1, Song2, sep = " vs ")) %>% 
   e_chart(Similaridade) %>% 
-  e_scatter(`Distância`) %>% 
-  e_tooltip(trigger = "axis", 
-            formatter = e_tooltip_pointer_formatter("currency"),
-            axisPointer = list(type = "cross"),
-            backgroundColor = "rgb(255,255,255,0.8)", 
-            borderColor = '#333', borderWidth = 1,
-            textStyle = list(color = '#333'))
+  e_scatter(`Distância`, 
+            bind = Dupla # Define nomes para as observações
+            ) %>% 
+  e_tooltip(formatter = htmlwidgets::JS("
+      function(params){
+        return('<strong>' + params.name + 
+               '</strong><br />Similaridade: ' + params.value[0] + 
+               '<br />Distância: ' + params.value[1])
+      }
+    "), 
+      backgroundColor = "rgb(255,255,255,0.8)", 
+      borderColor = '#333', borderWidth = 1,
+      textStyle = list(color = '#333')
+  )
 ```
+
+# Clusterização
+
+```{r}
+set.seed(123)
+
+data_cluster <- songs %>% 
+  drop_na() %>% 
+  column_to_rownames("SName") %>% 
+  select(5:13) %>% 
+  scale()
+
+fviz_nbclust(data_cluster, kmeans, method = "wss")
+```
+
+```{r}
+k5 <- kmeans(data_cluster, centers = 5, nstart = 25)
+fviz_cluster(k5, geom = "point",  data = data_cluster) + ggtitle("k = 5")
+```
+
 
 
