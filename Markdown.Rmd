@@ -966,7 +966,26 @@ fviz_nbclust(data_cluster, kmeans, method = "wss")
 
 ```{r}
 k5 <- kmeans(data_cluster, centers = 5, nstart = 25)
+pca <- prcomp(data_cluster)
+
 fviz_cluster(k5, geom = "point",  data = data_cluster) + ggtitle("k = 5")
+
+cbind(data_cluster, 
+      agrupamento = fitted(k5, method = "class"),
+      pca$x[,1:2]) %>% 
+  as.data.frame() %>% 
+  mutate(across(everything(), as.numeric)) %>% 
+  rownames_to_column("SName") %>% 
+    group_by(agrupamento) %>% 
+    e_charts(PC1) %>% 
+    e_scatter(PC2, bind = SName, symbol_size = 3) %>% 
+    e_tooltip(
+      formatter = htmlwidgets::JS("
+            function(params){return('<strong>' + params.name) + 
+                                    '</strong><br />x: ' + params.value[0] + 
+                                    '<br />y: ' + params.value[1]}"), 
+      backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333', 
+      borderWidth = 1, textStyle = list(color = '#333'))
 ```
 
 
