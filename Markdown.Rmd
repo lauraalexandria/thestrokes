@@ -7,11 +7,9 @@ output:
     toc_depth: 1
     toc_float:
       collapsed: no
-      css: styles.css
 ---
 
-<style>
-
+```{css, echo=FALSE}
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
 
 body {
@@ -56,17 +54,16 @@ div.metade {
   border-radius: 10px;
 
 .nav-pills > li > a {
-  color: rgba(143, 81, 249, 0.4);
+  color: #A92323;
 }
 
 .nav-pills > li.active > a, 
 .nav-pills > li.active > a:hover, 
 .nav-pills > li.active > a:focus {
   color: white;
-  background-color: rgba(143, 81, 249, 0.4);
+  background-color: #A92323;
 }
-
-</style>
+```
 
 
 
@@ -176,38 +173,38 @@ Here, I use 3 subunits of size 4 (4x3=12). The last column is used for a plot. Y
 </div>
 
 
-# Proportion of Word in each song - é aqui que poderia entrar um ANÁLISE FATORIAL
+<!-- # Proportion of Word in each song - é aqui que poderia entrar um ANÁLISE FATORIAL (O trem de similaridade já dá conta)  -->
 
-Foram usadas 1489 palavras diferentes em todas as músicas/ ainda tem que melhorar a tooltip aqui!
+<!-- Foram usadas 1489 palavras diferentes em todas as músicas/ ainda tem que melhorar a tooltip aqui! -->
 
-In this analysis I select the 10 words more frequent and I summed the proportion of them in each song forming 2 variables, the first one with the 5 firsts and the second one with the remaining. Now I see that doesn't make sense. 
+<!-- In this analysis I select the 10 words more frequent and I summed the proportion of them in each song forming 2 variables, the first one with the 5 firsts and the second one with the remaining. Now I see that doesn't make sense.  -->
 
-```{r message=FALSE, warning=FALSE}
-prop_por_song <- songs %>% select(c(2,4)) %>% 
-  unnest_tokens(word, letras) %>%
-  anti_join(stop_words) %>%
-  group_by(SName, word) %>% 
-  count() %>% 
-  ungroup() %>% group_by(SName) %>% 
-  mutate(prop = n/sum(n)) %>% 
-  select(-3) %>% 
-  pivot_wider(1:3, names_from = word, values_from = prop, values_fill = 0) 
+<!-- ```{r message=FALSE, warning=FALSE} -->
+<!-- prop_por_song <- songs %>% select(c(2,4)) %>%  -->
+<!--   unnest_tokens(word, letras) %>% -->
+<!--   anti_join(stop_words) %>% -->
+<!--   group_by(SName, word) %>%  -->
+<!--   count() %>%  -->
+<!--   ungroup() %>% group_by(SName) %>%  -->
+<!--   mutate(prop = n/sum(n)) %>%  -->
+<!--   select(-3) %>%  -->
+<!--   pivot_wider(1:3, names_from = word, values_from = prop, values_fill = 0)  -->
 
-top_10 <- contagem %>% arrange(desc(n)) %>% slice(1:10) %>% pull(word)
+<!-- top_10 <- contagem %>% arrange(desc(n)) %>% slice(1:10) %>% pull(word) -->
 
-prop_por_song %>% 
-  select(1, top_10) %>% 
-  mutate(var1 = sum(time:love),
-         var2 = sum(hard:night)) %>% 
-  e_chart(var1) %>% 
-  e_scatter(var2, symbol_size = 5, legend = F) %>% 
-  e_tooltip(trigger = "axis", 
-            formatter = e_tooltip_pointer_formatter("currency"),
-            axisPointer = list(type = "cross"),
-            backgroundColor = "rgb(255,255,255,0.8)", 
-            borderColor = '#333', borderWidth = 1,
-            textStyle = list(color = '#333'))
-```
+<!-- prop_por_song %>%  -->
+<!--   select(1, top_10) %>%  -->
+<!--   mutate(var1 = sum(time:love), -->
+<!--          var2 = sum(hard:night)) %>%  -->
+<!--   e_chart(var1) %>%  -->
+<!--   e_scatter(var2, symbol_size = 5, legend = F) %>%  -->
+<!--   e_tooltip(trigger = "axis",  -->
+<!--             formatter = e_tooltip_pointer_formatter("currency"), -->
+<!--             axisPointer = list(type = "cross"), -->
+<!--             backgroundColor = "rgb(255,255,255,0.8)",  -->
+<!--             borderColor = '#333', borderWidth = 1, -->
+<!--             textStyle = list(color = '#333')) -->
+<!-- ``` -->
 
 
 # Sentiment Analysis
@@ -629,21 +626,29 @@ boxplot_por_album <- function(var){
   # E as tooltips com Is This It em tudo??
   
   songs %>% 
+    mutate(
+      album_name = case_when(
+        album_name == "First Impressions Of Earth" ~ "First \n Impressions \n Of Earth",
+        album_name == "Comedown Machine" ~ "Comedown \n Machine",
+        album_name == "Future Present Past" ~ "Future \n Present \n Past",
+        album_name == "The New Abnormal" ~ "The New \n Abnormal",
+        T ~ album_name)
+      ) %>% 
     pivot_wider(id_cols = SName, names_from = album_name, values_from = !!sym(var)) %>% 
     e_charts() %>% 
     e_boxplot(`Is This It`) %>% 
     e_boxplot(`Room On Fire`) %>% 
-    e_boxplot(`First Impressions Of Earth`) %>% 
+    e_boxplot(`First \n Impressions \n Of Earth`) %>% 
     e_boxplot(`Angles`) %>% 
-    e_boxplot(`Comedown Machine`) %>% 
-    e_boxplot(`Future Present Past`) %>% 
-    e_boxplot(`The New Abnormal`) %>% 
+    e_boxplot(`Comedown \n Machine`) %>% 
+    e_boxplot(`Future \n Present \n Past`) %>% 
+    e_boxplot(`The New \n Abnormal`) %>% 
     e_boxplot(`Others`) %>%
     e_color("#AC3D3D") %>% 
     e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
               borderColor = '#333', borderWidth = 1,
               textStyle = list(color = '#333')) %>% 
-    e_x_axis(axisLabel = list(fontSize = 5)) # %>% 
+    e_x_axis(axisLabel = list(fontSize = 9)) # %>% 
     # e_y_axis(type ='category') %>% e_x_axis(type ='value')
   
 }
@@ -778,38 +783,30 @@ top10var_por_album("tempo")
 #
 
 ```{r}
-library(d3scatter)
-
-variaveis <- songs %>% select(6:14) %>% names()
-shared_songs <- songs %>% 
-  pivot_longer(6:14, names_to = "varx", values_to = "valuex") %>% 
-  slice(rep(1:n(), 9)) %>% 
-  cbind(
-    songs %>% 
-      pivot_longer(6:14, names_to = "vary", values_to = "valuey") %>% 
-      select(6:7) %>% 
-      slice(rep(1:n(), each = 9)) 
-    )
-
-shared_songs <- SharedData$new(shared_songs)
+shared_variavel1 <- songs %>% 
+  pivot_longer(6:14, names_to = "varx", values_to = "valor") %>% 
+  SharedData$new()
+shared_variavel2 <- songs %>% 
+  pivot_longer(6:14, names_to = "vary", values_to = "valor") %>% 
+  SharedData$new()
 
 bscols(widths = c(3, NA),
        
   list(
-    filter_select("varx", "Eixo X", shared_songs, ~varx, multiple = F),
-    filter_select("vary", "Eixo Y", shared_songs, ~vary, multiple = F)
+    filter_select("varx", "Eixo X", shared_variavel1, ~varx, multiple = F),
+    filter_select("vary", "Eixo Y", shared_variavel2, ~vary, multiple = F)
   ),
   
-  # ggplotly( PORQUE NÃO APARECE NADAAA
-  # 
-  #   ggplot(shared_songs, aes(x = valuex, y = valuey, color = varx)) +
-  #     geom_point()
-  # 
-  #   ),
-  
-  d3scatter(shared_songs, ~valuex, ~valuey, ~factor(album_name))
+  ggplotly( # QUAL O PROBLEMA DO FILTRO??
+
+    ggplot(shared_variavel1, aes(x = valor, color = album_name)) + 
+      geom_point(data = shared_variavel2, aes(y = valor))
+
+    )
   
 )
+
+
 ```
 
 # Similaridades
@@ -964,29 +961,130 @@ data_cluster <- songs %>%
 fviz_nbclust(data_cluster, kmeans, method = "wss")
 ```
 
+Com 5 clusters, um deles fica com apenas uma observação...
+- Outra coisa: são 9 variáveis, para um pca decente, precisaria de pelo menos 90 músicas, e aqui eu tenho 73...
+
 ```{r}
-k5 <- kmeans(data_cluster, centers = 5, nstart = 25)
+k4 <- kmeans(data_cluster, centers = 4, nstart = 25)
 pca <- prcomp(data_cluster)
 
-fviz_cluster(k5, geom = "point",  data = data_cluster) + ggtitle("k = 5")
+fviz_cluster(k4, geom = "point",  data = data_cluster) + ggtitle("k = 4")
 
 cbind(data_cluster, 
-      agrupamento = fitted(k5, method = "class"),
+      agrupamento = fitted(k4, method = "class"),
       pca$x[,1:2]) %>% 
   as.data.frame() %>% 
-  mutate(across(everything(), as.numeric)) %>% 
+  mutate(across(everything(), as.numeric),
+         agrupamento = factor(paste("Grupo", agrupamento), 
+                              paste("Grupo", 1:4))) %>% 
+  arrange(agrupamento) %>% 
   rownames_to_column("SName") %>% 
-    group_by(agrupamento) %>% 
-    e_charts(PC1) %>% 
-    e_scatter(PC2, bind = SName, symbol_size = 3) %>% 
-    e_tooltip(
-      formatter = htmlwidgets::JS("
-            function(params){return('<strong>' + params.name) + 
-                                    '</strong><br />x: ' + params.value[0] + 
-                                    '<br />y: ' + params.value[1]}"), 
-      backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333', 
-      borderWidth = 1, textStyle = list(color = '#333'))
+  group_by(agrupamento) %>% 
+  e_charts(PC1) %>% 
+  e_scatter(PC2, bind = SName, symbol_size = 10) %>% 
+  e_axis_labels(x = "PCA1 (30.1%)", y = "PCA1 (17.3%)") %>% 
+  e_tooltip(
+    formatter = htmlwidgets::JS("
+          function(params){return('<strong>' + params.name) + 
+                                  '</strong><br />x: ' + params.value[0] + 
+                                  '<br />y: ' + params.value[1]}"), 
+    backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333', 
+    borderWidth = 1, textStyle = list(color = '#333'))
+```
+
+```{r}
+agrupamentos <- songs %>% 
+  select(2, 6:14) %>% 
+  drop_na() %>% 
+  mutate(agrupamento = fitted(k4, method = "class"))
+
+shared_agrupamentos <- SharedData$new(agrupamentos)
+
+bscols(widths = c(3, NA),
+
+  list(
+    filter_select("agrupamento", "Escolha o Grupo", 
+                  shared_agrupamentos, ~agrupamento, multiple = F)
+  ),
+
+  datatable(shared_agrupamentos, width = 500,
+            class = "cell-border hover row-border"#,
+            # options = list(searching = FALSE) - não tá deixando filtrar??
+            )
+
+)
 ```
 
 
+## uns boxplot {.tabset .tabset-pills .tabcontent}
 
+```{r}
+boxplot_por_grupo <- function(var){
+  
+  # Ainda estressada com os labels do eixo x;
+  # E as tooltips com Is This It em tudo??
+  
+  agrupamentos %>% 
+    mutate(agrupamento = paste("Grupo", agrupamento)) %>% 
+    pivot_wider(id_cols = SName, names_from = agrupamento, values_from = !!sym(var)) %>% 
+    e_charts() %>% 
+    e_boxplot(`Grupo 1`) %>% 
+    e_boxplot(`Grupo 2`) %>% 
+    e_boxplot(`Grupo 3`) %>% 
+    e_boxplot(`Grupo 4`) %>% 
+    e_color("#AC3D3D") %>% 
+    e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
+              borderColor = '#333', borderWidth = 1,
+              textStyle = list(color = '#333')) 
+  
+}
+```
+
+
+### Dançabilidade
+
+```{r echo=FALSE}
+boxplot_por_grupo("danceability")
+```
+
+### Energia
+
+```{r echo=FALSE}
+boxplot_por_grupo("energy")
+```
+
+### Volume
+
+```{r echo=FALSE}
+boxplot_por_grupo("loudness")
+```
+
+### Falado
+
+```{r echo=FALSE}
+boxplot_por_grupo("speechiness")
+```
+
+### Acústico
+
+```{r echo=FALSE}
+boxplot_por_grupo("acousticness")
+```
+
+### Instrumentalidade
+
+```{r echo=FALSE}
+boxplot_por_grupo("instrumentalness")
+```
+
+### Valência
+
+```{r echo=FALSE}
+boxplot_por_grupo("valence")
+```
+
+### Tempo 
+
+```{r echo=FALSE}
+boxplot_por_grupo("tempo")
+```
