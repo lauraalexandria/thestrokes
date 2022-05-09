@@ -450,145 +450,145 @@ gauge_trios("Trust")
 ```
 
 
-## The Afinn Tecniche
+<!-- ## The Afinn Tecniche -->
 
-Other tecnique to analyse text
+<!-- Other tecnique to analyse text -->
 
-```{r message = F}
-afinn <- get_sentiments("afinn")
+<!-- ```{r message = F} -->
+<!-- afinn <- get_sentiments("afinn") -->
 
-sent_num_por_mus <- songs %>% select(c(2,4)) %>% 
-  unnest_tokens(word, letras) %>%
-  anti_join(stop_words) %>%
-  group_by(word) %>% 
-  count() %>% ungroup() %>% 
-  inner_join(afinn) %>% 
-  filter(word != "yeah")
-```
+<!-- sent_num_por_mus <- songs %>% select(c(2,4)) %>%  -->
+<!--   unnest_tokens(word, letras) %>% -->
+<!--   anti_join(stop_words) %>% -->
+<!--   group_by(word) %>%  -->
+<!--   count() %>% ungroup() %>%  -->
+<!--   inner_join(afinn) %>%  -->
+<!--   filter(word != "yeah") -->
+<!-- ``` -->
 
-Ainda tenho que sumarisar o total de negatividade por música
-
-
-```{r message = F}
-sent_num_por_mus %>% 
-  e_charts() %>% 
-  e_histogram(value) %>% 
-  e_tooltip(backgroundColor = "rgba(255,255,255,0.8)", 
-            borderColor = '#333', borderWidth = 1,
-            textStyle = list(color = '#333'))
-```
-
-```{r message = F}
-sent_num_por_mus %>% 
-  e_charts(value) %>% 
-  e_scatter(n, name = "Frequency") %>% 
-  e_tooltip(backgroundColor = "rgba(255,255,255,0.8)", 
-            borderColor = '#333', borderWidth = 1,
-            textStyle = list(color = '#333'))
-```
+<!-- Ainda tenho que sumarisar o total de negatividade por música -->
 
 
+<!-- ```{r message = F} -->
+<!-- sent_num_por_mus %>%  -->
+<!--   e_charts() %>%  -->
+<!--   e_histogram(value) %>%  -->
+<!--   e_tooltip(backgroundColor = "rgba(255,255,255,0.8)",  -->
+<!--             borderColor = '#333', borderWidth = 1, -->
+<!--             textStyle = list(color = '#333')) -->
+<!-- ``` -->
 
-# Term Frequency
+<!-- ```{r message = F} -->
+<!-- sent_num_por_mus %>%  -->
+<!--   e_charts(value) %>%  -->
+<!--   e_scatter(n, name = "Frequency") %>%  -->
+<!--   e_tooltip(backgroundColor = "rgba(255,255,255,0.8)",  -->
+<!--             borderColor = '#333', borderWidth = 1, -->
+<!--             textStyle = list(color = '#333')) -->
+<!-- ``` -->
 
-```{r message = F}
-tf_idf <- songs %>% select(c(2, 4, 5)) %>% 
-  unnest_tokens(word, letras) %>%
-  anti_join(stop_words) %>% 
-  group_by(SName, album_name) %>% 
-  count(word) %>% ungroup() %>% 
-  bind_tf_idf(word, SName, n)
 
-tf_idf %>%          
-  e_chart() %>% 
-  e_histogram(tf_idf) %>% 
-  e_tooltip(backgroundColor = "rgba(255,255,255,0.8)", 
-            borderColor = '#333', borderWidth = 1,
-            textStyle = list(color = '#333'))
 
-tf_idf %>%          # O quanto isso faria sentido?
-  e_chart(tf) %>% 
-  e_scatter(idf) %>% 
-  e_tooltip(backgroundColor = "rgba(255,255,255,0.8)", 
-            borderColor = '#333', borderWidth = 1,
-            textStyle = list(color = '#333'))
-```
+<!-- # Term Frequency -->
 
-## {.tabset .tabset-fade .tabset-pills}
+<!-- ```{r message = F} -->
+<!-- tf_idf <- songs %>% select(c(2, 4, 5)) %>%  -->
+<!--   unnest_tokens(word, letras) %>% -->
+<!--   anti_join(stop_words) %>%  -->
+<!--   group_by(SName, album_name) %>%  -->
+<!--   count(word) %>% ungroup() %>%  -->
+<!--   bind_tf_idf(word, SName, n) -->
 
-```{r message = F}
-tf_idf_by_song <- function(input_album){
-  
-  tf_idf %>%
-    filter(album_name == input_album) %>% 
-    slice_max(tf_idf, n = 10) %>% 
-    group_by(SName) %>% 
-    e_charts(word, timeline = T) %>% 
-    e_bar(tf_idf, legend = F, name = "Ajusted Frequency") %>%
-    e_grid(left = "30%") %>% 
-    e_timeline_opts(top = 'middle',
-                    right = '100%',
-                    orient = "vertical",
-                    label = list(position = 'left'),
-                    controlStyle = list(showPlayBtn = F, itemSize = 0, itemGap = 110),
-                    lineStyle = list(show = F),
-                    itemStyle = list(color = 'rgba(128, 128, 128, 0.3)')) %>% 
-    e_tooltip(backgroundColor = "rgba(255,255,255,0.8)", 
-              borderColor = '#333', borderWidth = 1,
-              textStyle = list(color = '#333')) %>% 
-    e_flip_coords()
+<!-- tf_idf %>%           -->
+<!--   e_chart() %>%  -->
+<!--   e_histogram(tf_idf) %>%  -->
+<!--   e_tooltip(backgroundColor = "rgba(255,255,255,0.8)",  -->
+<!--             borderColor = '#333', borderWidth = 1, -->
+<!--             textStyle = list(color = '#333')) -->
 
-}
-```
+<!-- tf_idf %>%          # O quanto isso faria sentido? -->
+<!--   e_chart(tf) %>%  -->
+<!--   e_scatter(idf) %>%  -->
+<!--   e_tooltip(backgroundColor = "rgba(255,255,255,0.8)",  -->
+<!--             borderColor = '#333', borderWidth = 1, -->
+<!--             textStyle = list(color = '#333')) -->
+<!-- ``` -->
 
-### Is This It
+<!-- ## {.tabset .tabset-fade .tabset-pills} -->
 
-```{r echo=FALSE}
-tf_idf_by_song("Is This It")
-```
+<!-- ```{r message = F} -->
+<!-- tf_idf_by_song <- function(input_album){ -->
 
- 
-### Room On Fire
+<!--   tf_idf %>% -->
+<!--     filter(album_name == input_album) %>%  -->
+<!--     slice_max(tf_idf, n = 10) %>%  -->
+<!--     group_by(SName) %>%  -->
+<!--     e_charts(word, timeline = T) %>%  -->
+<!--     e_bar(tf_idf, legend = F, name = "Ajusted Frequency") %>% -->
+<!--     e_grid(left = "30%") %>%  -->
+<!--     e_timeline_opts(top = 'middle', -->
+<!--                     right = '100%', -->
+<!--                     orient = "vertical", -->
+<!--                     label = list(position = 'left'), -->
+<!--                     controlStyle = list(showPlayBtn = F, itemSize = 0, itemGap = 110), -->
+<!--                     lineStyle = list(show = F), -->
+<!--                     itemStyle = list(color = 'rgba(128, 128, 128, 0.3)')) %>%  -->
+<!--     e_tooltip(backgroundColor = "rgba(255,255,255,0.8)",  -->
+<!--               borderColor = '#333', borderWidth = 1, -->
+<!--               textStyle = list(color = '#333')) %>%  -->
+<!--     e_flip_coords() -->
 
-```{r echo=FALSE}
-tf_idf_by_song("Room On Fire")
-```
+<!-- } -->
+<!-- ``` -->
 
-### First Impressions of Earth
+<!-- ### Is This It -->
 
-```{r echo=FALSE}
-tf_idf_by_song("First Impressions Of Earth")
-```
+<!-- ```{r echo=FALSE} -->
+<!-- tf_idf_by_song("Is This It") -->
+<!-- ``` -->
 
-### Angles
 
-```{r echo=FALSE}
-tf_idf_by_song("Angles")
-```
+<!-- ### Room On Fire -->
 
-### Comedown Machine
+<!-- ```{r echo=FALSE} -->
+<!-- tf_idf_by_song("Room On Fire") -->
+<!-- ``` -->
 
-```{r echo=FALSE}
-tf_idf_by_song("Comedown Machine")
-```
+<!-- ### First Impressions of Earth -->
 
-### Future Present Past
+<!-- ```{r echo=FALSE} -->
+<!-- tf_idf_by_song("First Impressions Of Earth") -->
+<!-- ``` -->
 
-```{r echo=FALSE}
-tf_idf_by_song("Future Present Past")
-```
+<!-- ### Angles -->
 
-### The New Abnormal
+<!-- ```{r echo=FALSE} -->
+<!-- tf_idf_by_song("Angles") -->
+<!-- ``` -->
 
-```{r echo=FALSE}
-tf_idf_by_song("The New Abnormal")
-```
+<!-- ### Comedown Machine -->
 
-### Others
+<!-- ```{r echo=FALSE} -->
+<!-- tf_idf_by_song("Comedown Machine") -->
+<!-- ``` -->
 
-```{r echo=FALSE}
-tf_idf_by_song("Others")
-```
+<!-- ### Future Present Past -->
+
+<!-- ```{r echo=FALSE} -->
+<!-- tf_idf_by_song("Future Present Past") -->
+<!-- ``` -->
+
+<!-- ### The New Abnormal -->
+
+<!-- ```{r echo=FALSE} -->
+<!-- tf_idf_by_song("The New Abnormal") -->
+<!-- ``` -->
+
+<!-- ### Others -->
+
+<!-- ```{r echo=FALSE} -->
+<!-- tf_idf_by_song("Others") -->
+<!-- ``` -->
 
 <!-- # Words Relationship -->
 
@@ -784,27 +784,32 @@ top10var_por_album("tempo")
 
 ```{r}
 shared_variavel1 <- songs %>% 
-  pivot_longer(6:14, names_to = "varx", values_to = "valor") %>% 
+  pivot_longer(6:14, names_to = "var", values_to = "valor") %>% 
+  select(6:7) %>% 
   SharedData$new()
 shared_variavel2 <- songs %>% 
-  pivot_longer(6:14, names_to = "vary", values_to = "valor") %>% 
+  pivot_longer(6:14, names_to = "var", values_to = "valor") %>% 
+  select(6:7) %>% 
   SharedData$new()
 
-bscols(widths = c(3, NA),
-       
-  list(
-    filter_select("varx", "Eixo X", shared_variavel1, ~varx, multiple = F),
-    filter_select("vary", "Eixo Y", shared_variavel2, ~vary, multiple = F)
-  ),
-  
-  ggplotly( # QUAL O PROBLEMA DO FILTRO??
-
-    ggplot(shared_variavel1, aes(x = valor, color = album_name)) + 
-      geom_point(data = shared_variavel2, aes(y = valor))
-
-    )
-  
-)
+# bscols(widths = c(3, NA),
+#        
+#   list(
+#     filter_select("varx", "Eixo X", shared_variavel1, ~var, 
+#                   selected = "energy", multiple = F),
+#     filter_select("vary", "Eixo Y", shared_variavel2, ~var, 
+#                   selected = "energy", multiple = F)
+#   ),
+#   
+#   ggplotly( # QUAL O PROBLEMA DO FILTRO??
+# 
+#     ggplot() + 
+#       geom_point(aes(x = shared_variavel1$data() %>% pull(valor),
+#                      y = shared_variavel2$data() %>% pull(valor)))
+# 
+#     )
+#   
+# )
 
 
 ```
@@ -934,6 +939,32 @@ similaridades %>%
   e_scatter(`Distância`, 
             bind = Dupla # Define nomes para as observações
             ) %>% 
+  e_loess(`Distância` ~ Similaridade, showSymbol = FALSE) %>% 
+  e_lm(`Distância` ~ Similaridade, showSymbol = FALSE) %>% 
+  e_tooltip(formatter = htmlwidgets::JS("
+      function(params){
+        return('<strong>' + params.name + 
+               '</strong><br />Similaridade: ' + params.value[0] + 
+               '<br />Distância: ' + params.value[1])
+      }
+    "), 
+      backgroundColor = "rgb(255,255,255,0.8)", 
+      borderColor = '#333', borderWidth = 1,
+      textStyle = list(color = '#333')
+  )
+```
+
+```{r}
+similaridades %>% 
+  inner_join(distancias) %>% 
+  mutate(Dupla = paste(Song1, Song2, sep = " vs "),
+         `Distância` = 1/`Distância`) %>% 
+  e_chart(Similaridade) %>% 
+  e_scatter(`Distância`, 
+            bind = Dupla # Define nomes para as observações
+            ) %>% 
+  e_loess(`Distância` ~ Similaridade, showSymbol = FALSE) %>% 
+  e_lm(`Distância` ~ Similaridade, showSymbol = FALSE) %>% 
   e_tooltip(formatter = htmlwidgets::JS("
       function(params){
         return('<strong>' + params.name + 
@@ -965,38 +996,45 @@ Com 5 clusters, um deles fica com apenas uma observação...
 - Outra coisa: são 9 variáveis, para um pca decente, precisaria de pelo menos 90 músicas, e aqui eu tenho 73...
 
 ```{r}
-k4 <- kmeans(data_cluster, centers = 4, nstart = 25)
+k3 <- kmeans(data_cluster, centers = 3, nstart = 25)
 pca <- prcomp(data_cluster)
 
-fviz_cluster(k4, geom = "point",  data = data_cluster) + ggtitle("k = 4")
+fviz_cluster(k3, geom = "point",  data = data_cluster) + ggtitle("k = 3")
 
 cbind(data_cluster, 
-      agrupamento = fitted(k4, method = "class"),
+      agrupamento = fitted(k3, method = "class"),
       pca$x[,1:2]) %>% 
-  as.data.frame() %>% 
-  mutate(across(everything(), as.numeric),
-         agrupamento = factor(paste("Grupo", agrupamento), 
-                              paste("Grupo", 1:4))) %>% 
-  arrange(agrupamento) %>% 
-  rownames_to_column("SName") %>% 
-  group_by(agrupamento) %>% 
-  e_charts(PC1) %>% 
-  e_scatter(PC2, bind = SName, symbol_size = 10) %>% 
-  e_axis_labels(x = "PCA1 (30.1%)", y = "PCA1 (17.3%)") %>% 
-  e_tooltip(
-    formatter = htmlwidgets::JS("
+    as.data.frame() %>% 
+    mutate(across(everything(), as.numeric),
+           agrupamento = case_when(agrupamento == 2 ~ 0,
+                                   agrupamento == 1 ~ 2,
+                                   T ~ agrupamento),
+           agrupamento = ifelse(agrupamento == 0, 1, agrupamento),
+           agrupamento = paste("Grupo", agrupamento)) %>% 
+    arrange(agrupamento) %>% 
+    rownames_to_column("SName") %>% 
+    group_by(agrupamento) %>% 
+    e_charts(PC1) %>% 
+    e_scatter(PC2, bind = SName, symbol_size = 10) %>% 
+    e_axis_labels(x = "\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n PCA1 (30.1%)", 
+                  y = "PCA2 (17.3%)                                                                                                    ") %>% 
+    e_color(c("#FE5D26", "#7EBC89", "#BAA5FF", "#D62246")) %>% 
+    e_tooltip(
+        formatter = htmlwidgets::JS("
           function(params){return('<strong>' + params.name) + 
                                   '</strong><br />x: ' + params.value[0] + 
                                   '<br />y: ' + params.value[1]}"), 
-    backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333', 
-    borderWidth = 1, textStyle = list(color = '#333'))
+        backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333', 
+        borderWidth = 1, textStyle = list(color = '#333'))
 ```
+
+Acredito que o PCA1 é muito influenciado por energia e tal e outro?
 
 ```{r}
 agrupamentos <- songs %>% 
   select(2, 6:14) %>% 
   drop_na() %>% 
-  mutate(agrupamento = fitted(k4, method = "class"))
+  mutate(agrupamento = fitted(k3, method = "class"))
 
 shared_agrupamentos <- SharedData$new(agrupamentos)
 
@@ -1031,7 +1069,7 @@ boxplot_por_grupo <- function(var){
     e_boxplot(`Grupo 1`) %>% 
     e_boxplot(`Grupo 2`) %>% 
     e_boxplot(`Grupo 3`) %>% 
-    e_boxplot(`Grupo 4`) %>% 
+    # e_boxplot(`Grupo 4`) %>% 
     e_color("#AC3D3D") %>% 
     e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
               borderColor = '#333', borderWidth = 1,
