@@ -793,22 +793,22 @@ shared_variavel2 <- songs %>%
   SharedData$new()
 
 # bscols(widths = c(3, NA),
-#        
+# 
 #   list(
-#     filter_select("varx", "Eixo X", shared_variavel1, ~var, 
-#                   selected = "energy", multiple = F),
-#     filter_select("vary", "Eixo Y", shared_variavel2, ~var, 
-#                   selected = "energy", multiple = F)
+#     filter_select("varx", "Eixo X", shared_variavel1, ~var,
+#                   multiple = F),
+#     filter_select("vary", "Eixo Y", shared_variavel2, ~var,
+#                   multiple = F)
 #   ),
-#   
+# 
 #   ggplotly( # QUAL O PROBLEMA DO FILTRO??
 # 
-#     ggplot() + 
+#     ggplot() +
 #       geom_point(aes(x = shared_variavel1$data() %>% pull(valor),
 #                      y = shared_variavel2$data() %>% pull(valor)))
 # 
 #     )
-#   
+# 
 # )
 
 
@@ -845,33 +845,33 @@ O problema é que aqui a gente pega uma música e o sistema caça outras 5 iguai
 freq_by_song <- songs %>% select(c(2,4)) %>% # provavelmente posso apagar
   unnest_tokens(word, letras) %>%
   anti_join(stop_words) %>%
-  group_by(SName, word) %>% 
-  count() %>% 
-  ungroup() %>% group_by(SName) %>% 
+  group_by(SName, word) %>%
+  count() %>%
+  ungroup() %>% group_by(SName) %>%
   #slice_max(order_by = n, n = 10) %>%  o cara usou muito mesmo
   pivot_wider(1:3, names_from = SName, values_from = n, values_fill = 0)
 
 cosine_sim <- function(a, b) crossprod(a,b)/sqrt(crossprod(a)*crossprod(b))
 
 calc_cos_sim <- function(name, freq = freq_by_song) {
-  
+
   freq <- freq %>% select(-c(word))
-  
-  sapply(freq, list) %>% 
-    map(cosine_sim, freq %>% pull(name)) %>% 
-    unlist() %>% 
-    as.data.frame() %>% 
+
+  sapply(freq, list) %>%
+    map(cosine_sim, freq %>% pull(name)) %>%
+    unlist() %>%
+    as.data.frame() %>%
     rename(Similarity = ".")
-  
+
 }
 
-similaridades <- mapply(calc_cos_sim, freq_by_song %>% names() %>% .[-1]) %>% 
-  bind_cols() %>% 
-  pivot_longer(1:85, names_to = "Song1", values_to = "Similaridade") %>% 
+similaridades <- mapply(calc_cos_sim, freq_by_song %>% names() %>% .[-1]) %>%
+  bind_cols() %>%
+  pivot_longer(1:85, names_to = "Song1", values_to = "Similaridade") %>%
   mutate(Song1 = str_remove(Song1, ".Similarity"),
          Song2 = freq_by_song %>% names() %>% .[-1] %>% rep(each = 85),
-         Similaridade = round(Similaridade, 3)) %>% 
-  filter(Similaridade != 1) %>% 
+         Similaridade = round(Similaridade, 3)) %>%
+  filter(Similaridade != 1) %>%
   relocate(Similaridade, .after = last_col())
 
 shared_similaridades <- SharedData$new(similaridades)
@@ -879,9 +879,9 @@ shared_similaridades <- SharedData$new(similaridades)
 bscols(widths = c(3, NA),
 
   list(
-    filter_select("song1", "Escolha a 1° Música", 
+    filter_select("song1", "Escolha a 1° Música",
                   shared_similaridades, ~Song1, multiple = F),
-    filter_select("song2", "Escolha a 2° Música", 
+    filter_select("song2", "Escolha a 2° Música",
                   shared_similaridades, ~Song2, multiple = F)
   ),
 
@@ -899,14 +899,14 @@ Diferente da outra função, por que as colunas não são as músicas;
 Aqui já pode ser distância também;
 
 ```{r}
-distancias <- get_dist(songs %>% 
-                         column_to_rownames("SName") %>% 
-                         select(5:13) %>% drop_na()) %>% 
-  as.matrix() %>% 
-  as.data.frame() %>% 
-  rownames_to_column("Song1") %>% 
-  pivot_longer(2:74, names_to = "Song2", values_to = "Distância") %>% 
-  filter(`Distância` != 0) %>% 
+distancias <- get_dist(songs %>%
+                         column_to_rownames("SName") %>%
+                         select(5:13) %>% drop_na()) %>%
+  as.matrix() %>%
+  as.data.frame() %>%
+  rownames_to_column("Song1") %>%
+  pivot_longer(2:74, names_to = "Song2", values_to = "Distância") %>%
+  filter(`Distância` != 0) %>%
   mutate(`Distância` = round(`Distância`, 2))
 
 shared_distancias <- SharedData$new(distancias)
@@ -914,10 +914,10 @@ shared_distancias <- SharedData$new(distancias)
 bscols(widths = c(3, NA),
 
   list(
-    filter_select("song1", "Escolha a 1° Música", 
-                  shared_similaridades, ~Song1, multiple = F),
-    filter_select("song2", "Escolha a 2° Música", 
-                  shared_similaridades, ~Song2, multiple = F)
+    filter_select("song1", "Escolha a 1° Música",
+                  shared_distancias, ~Song1, multiple = F),
+    filter_select("song2", "Escolha a 2° Música",
+                  shared_distancias, ~Song2, multiple = F)
   ),
 
   datatable(shared_distancias, width = 500,
@@ -932,47 +932,47 @@ bscols(widths = c(3, NA),
 O esperado era existir alguma correlação negativa
 
 ```{r}
-similaridades %>% 
-  inner_join(distancias) %>% 
-  mutate(Dupla = paste(Song1, Song2, sep = " vs ")) %>% 
-  e_chart(Similaridade) %>% 
-  e_scatter(`Distância`, 
+similaridades %>%
+  inner_join(distancias) %>%
+  mutate(Dupla = paste(Song1, Song2, sep = " vs ")) %>%
+  e_chart(Similaridade) %>%
+  e_scatter(`Distância`,
             bind = Dupla # Define nomes para as observações
-            ) %>% 
-  e_loess(`Distância` ~ Similaridade, showSymbol = FALSE) %>% 
-  e_lm(`Distância` ~ Similaridade, showSymbol = FALSE) %>% 
+            ) %>%
+  e_loess(`Distância` ~ Similaridade, showSymbol = FALSE) %>%
+  e_lm(`Distância` ~ Similaridade, showSymbol = FALSE) %>%
   e_tooltip(formatter = htmlwidgets::JS("
       function(params){
-        return('<strong>' + params.name + 
-               '</strong><br />Similaridade: ' + params.value[0] + 
+        return('<strong>' + params.name +
+               '</strong><br />Similaridade: ' + params.value[0] +
                '<br />Distância: ' + params.value[1])
       }
-    "), 
-      backgroundColor = "rgb(255,255,255,0.8)", 
+    "),
+      backgroundColor = "rgb(255,255,255,0.8)",
       borderColor = '#333', borderWidth = 1,
       textStyle = list(color = '#333')
   )
 ```
 
 ```{r}
-similaridades %>% 
-  inner_join(distancias) %>% 
+similaridades %>%
+  inner_join(distancias) %>%
   mutate(Dupla = paste(Song1, Song2, sep = " vs "),
-         `Distância` = 1/`Distância`) %>% 
-  e_chart(Similaridade) %>% 
-  e_scatter(`Distância`, 
+         `Distância` = 1/`Distância`) %>%
+  e_chart(Similaridade) %>%
+  e_scatter(`Distância`,
             bind = Dupla # Define nomes para as observações
-            ) %>% 
-  e_loess(`Distância` ~ Similaridade, showSymbol = FALSE) %>% 
-  e_lm(`Distância` ~ Similaridade, showSymbol = FALSE) %>% 
+            ) %>%
+  e_loess(`Distância` ~ Similaridade, showSymbol = FALSE) %>%
+  e_lm(`Distância` ~ Similaridade, showSymbol = FALSE) %>%
   e_tooltip(formatter = htmlwidgets::JS("
       function(params){
-        return('<strong>' + params.name + 
-               '</strong><br />Similaridade: ' + params.value[0] + 
+        return('<strong>' + params.name +
+               '</strong><br />Similaridade: ' + params.value[0] +
                '<br />Distância: ' + params.value[1])
       }
-    "), 
-      backgroundColor = "rgb(255,255,255,0.8)", 
+    "),
+      backgroundColor = "rgb(255,255,255,0.8)",
       borderColor = '#333', borderWidth = 1,
       textStyle = list(color = '#333')
   )
@@ -1001,39 +1001,39 @@ pca <- prcomp(data_cluster)
 
 fviz_cluster(k3, geom = "point",  data = data_cluster) + ggtitle("k = 3")
 
-cbind(data_cluster, 
+cbind(data_cluster,
       agrupamento = fitted(k3, method = "class"),
-      pca$x[,1:2]) %>% 
-    as.data.frame() %>% 
+      pca$x[,1:2]) %>%
+    as.data.frame() %>%
     mutate(across(everything(), as.numeric),
            agrupamento = case_when(agrupamento == 2 ~ 0,
                                    agrupamento == 1 ~ 2,
                                    T ~ agrupamento),
            agrupamento = ifelse(agrupamento == 0, 1, agrupamento),
-           agrupamento = paste("Grupo", agrupamento)) %>% 
-    arrange(agrupamento) %>% 
-    rownames_to_column("SName") %>% 
-    group_by(agrupamento) %>% 
-    e_charts(PC1) %>% 
-    e_scatter(PC2, bind = SName, symbol_size = 10) %>% 
-    e_axis_labels(x = "\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n PCA1 (30.1%)", 
-                  y = "PCA2 (17.3%)                                                                                                    ") %>% 
-    e_color(c("#FE5D26", "#7EBC89", "#BAA5FF", "#D62246")) %>% 
+           agrupamento = paste("Grupo", agrupamento)) %>%
+    arrange(agrupamento) %>%
+    rownames_to_column("SName") %>%
+    group_by(agrupamento) %>%
+    e_charts(PC1) %>%
+    e_scatter(PC2, bind = SName, symbol_size = 10) %>%
+    e_axis_labels(x = "\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n PCA1 (30.1%)",
+                  y = "PCA2 (17.3%)                                                                                                    ") %>%
+    e_color(c("#FE5D26", "#7EBC89", "#BAA5FF", "#D62246")) %>%
     e_tooltip(
         formatter = htmlwidgets::JS("
-          function(params){return('<strong>' + params.name) + 
-                                  '</strong><br />x: ' + params.value[0] + 
-                                  '<br />y: ' + params.value[1]}"), 
-        backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333', 
+          function(params){return('<strong>' + params.name) +
+                                  '</strong><br />x: ' + params.value[0] +
+                                  '<br />y: ' + params.value[1]}"),
+        backgroundColor = "rgba(255,255,255,0.8)", borderColor = '#333',
         borderWidth = 1, textStyle = list(color = '#333'))
 ```
 
 Acredito que o PCA1 é muito influenciado por energia e tal e outro?
 
 ```{r}
-agrupamentos <- songs %>% 
-  select(2, 6:14) %>% 
-  drop_na() %>% 
+agrupamentos <- songs %>%
+  select(2, 6:14) %>%
+  drop_na() %>%
   mutate(agrupamento = fitted(k3, method = "class"))
 
 shared_agrupamentos <- SharedData$new(agrupamentos)
@@ -1041,7 +1041,7 @@ shared_agrupamentos <- SharedData$new(agrupamentos)
 bscols(widths = c(3, NA),
 
   list(
-    filter_select("agrupamento", "Escolha o Grupo", 
+    filter_select("agrupamento", "Escolha o Grupo",
                   shared_agrupamentos, ~agrupamento, multiple = F)
   ),
 
@@ -1058,23 +1058,23 @@ bscols(widths = c(3, NA),
 
 ```{r}
 boxplot_por_grupo <- function(var){
-  
+
   # Ainda estressada com os labels do eixo x;
   # E as tooltips com Is This It em tudo??
-  
-  agrupamentos %>% 
-    mutate(agrupamento = paste("Grupo", agrupamento)) %>% 
-    pivot_wider(id_cols = SName, names_from = agrupamento, values_from = !!sym(var)) %>% 
-    e_charts() %>% 
-    e_boxplot(`Grupo 1`) %>% 
-    e_boxplot(`Grupo 2`) %>% 
-    e_boxplot(`Grupo 3`) %>% 
-    # e_boxplot(`Grupo 4`) %>% 
-    e_color("#AC3D3D") %>% 
-    e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
+
+  agrupamentos %>%
+    mutate(agrupamento = paste("Grupo", agrupamento)) %>%
+    pivot_wider(id_cols = SName, names_from = agrupamento, values_from = !!sym(var)) %>%
+    e_charts() %>%
+    e_boxplot(`Grupo 1`) %>%
+    e_boxplot(`Grupo 2`) %>%
+    e_boxplot(`Grupo 3`) %>%
+    # e_boxplot(`Grupo 4`) %>%
+    e_color("#AC3D3D") %>%
+    e_tooltip(backgroundColor = "rgb(255,255,255,0.8)",
               borderColor = '#333', borderWidth = 1,
-              textStyle = list(color = '#333')) 
-  
+              textStyle = list(color = '#333'))
+
 }
 ```
 
@@ -1121,7 +1121,7 @@ boxplot_por_grupo("instrumentalness")
 boxplot_por_grupo("valence")
 ```
 
-### Tempo 
+### Tempo
 
 ```{r echo=FALSE}
 boxplot_por_grupo("tempo")
