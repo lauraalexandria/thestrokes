@@ -11,35 +11,92 @@ output:
 
 ```{css, echo=FALSE}
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
 
 body {
-  text-align: justify}
-  
+  text-align: justify;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.title {
+  color: #A92323;
+  font-size: 10px; 
+  font-family: 'Montserrat', sans-serif;
+  text-align: right;
+  position: fixed;
+  top: 5%;
+  right: 74%;
+  width: 300px;
+}
+
+.date {
+  color: #dedede;
+  font-size: 20px;
+  font-family: 'Raleway', sans-serif;
+  text-align: right;
+  position: fixed;
+  top: 27%;
+  right: 74%;
+  width: 250px;
+}
+
 #TOC {
-  background: url("https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/022011/untitled-1_95.png?itok=i9qUrcs1");
+  background: url("https://vandal-us.s3.amazonaws.com/spree/products/38559/original/uploads_2F1542892606452-ri8xswrviim-024e6ecc4b1cc21eded6b5f393e95096_2FStrokes-Vandal.jpg");
   background-size: contain;
   padding-top: 250px !important;
   background-repeat: no-repeat;
-  color: purple;
-  border-color: #fffff}
+  color: #595260;
+  font-family: 'Poppins', sans-serif;
+  border-color: #ffffff
+}
   
 .tocify {
   border: none;
 }
   
 .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
-    background-color: purple}
-    
-div.container {
-  width: 100% 
+    background-color: #595260 /*Cor do background da TOC quando selecionada*/
+}  
+
+div.meunome {
+ text-align: justify;
+ position: fixed;
+ top: 88%;
+ right: 77%;
 }
-    
-div.bloco1 {
+ 
+.section h1 {
+  color: #548CA8;
+	font-family: 'Montserrat', sans-serif;
+	border-bottom: 1px solid #dedede
+}
+  
+.section h2 {
+  color: #B2B1B9;
+  font-family: 'Poppins', sans-serif;  
+}
+  
+b, strong {
+  color: #FF6F61;
+}
+
+mark {
+  background-color: #FFBBA4;
+}
+
+a {
+  color: #778bd9;
+}
+
+div.bloco {
   text-align: justify;
-  width : 250px;
   padding: 1em;
-  background: rgba(143, 81, 249, 0.4);
+  background: #f5eeeb;
   color: black;
+  border: 5px solid white;
   border-radius: 10px;
 }
 
@@ -48,21 +105,53 @@ div.metade {
   float: left;
   text-align: justify;
   padding: 1em;
-  background: rgba(143, 81, 249, 0.4);
+  background: #f5eeeb;
   color: black;
   border: 5px solid white;
   border-radius: 10px;
+}
+
+div.meunome {
+ text-align: justify;
+ position: fixed;
+ top: 88%;
+ right: 77%;
+}
+
+ul.redes {
+  position: fixed;
+  top: 92%;
+  right: 82%;
+}
+
+ul.redes li{
+  list-style: none;
+  float: left;
+  size: 30px;
+  margin-right: 7px;
+}
+
+ul.redes a{
+  color: #dedede;
+  size: 30px;
+}
+
+ul.redes a:hover{
+  color: #595260;
+  text-decoration: none;
+}
 
 .nav-pills > li > a {
-  color: #A92323;
+    color: #595260;
 }
 
 .nav-pills > li.active > a, 
 .nav-pills > li.active > a:hover, 
 .nav-pills > li.active > a:focus {
-  color: white;
-  background-color: #A92323;
-}
+    color: white;
+    background-color: #595260;
+    }
+
 ```
 
 
@@ -365,6 +454,9 @@ prop_sent_by_song("Others")
 gauge_trios <- function(sent){
   
   top_3 <- sent_por_mus %>% 
+    mutate(SName = ifelse(SName == "Modern Girls & Old Fashioned Men", 
+                          "Modern Girls & \n Old Fashioned Men",
+                          SName)) %>% 
     filter(sentiment == sent) %>% 
     slice_max(prop, n = 3)
   
@@ -628,21 +720,21 @@ boxplot_por_album <- function(var){
   songs %>% 
     mutate(
       album_name = case_when(
-        album_name == "First Impressions Of Earth" ~ "First \n Impressions \n Of Earth",
-        album_name == "Comedown Machine" ~ "Comedown \n Machine",
-        album_name == "Future Present Past" ~ "Future \n Present \n Past",
-        album_name == "The New Abnormal" ~ "The New \n Abnormal",
+        album_name == "First Impressions Of Earth" ~ "First\nImpressions\nOf Earth",
+        album_name == "Comedown Machine" ~ "Comedown\nMachine",
+        album_name == "Future Present Past" ~ "Future\nPresent\nPast",
+        album_name == "The New Abnormal" ~ "The New\nAbnormal",
         T ~ album_name)
       ) %>% 
     pivot_wider(id_cols = SName, names_from = album_name, values_from = !!sym(var)) %>% 
     e_charts() %>% 
     e_boxplot(`Is This It`) %>% 
     e_boxplot(`Room On Fire`) %>% 
-    e_boxplot(`First \n Impressions \n Of Earth`) %>% 
+    e_boxplot(`First\nImpressions\nOf Earth`) %>% 
     e_boxplot(`Angles`) %>% 
-    e_boxplot(`Comedown \n Machine`) %>% 
-    e_boxplot(`Future \n Present \n Past`) %>% 
-    e_boxplot(`The New \n Abnormal`) %>% 
+    e_boxplot(`Comedown\nMachine`) %>% 
+    e_boxplot(`Future\nPresent\nPast`) %>% 
+    e_boxplot(`The New\nAbnormal`) %>% 
     e_boxplot(`Others`) %>%
     e_color("#AC3D3D") %>% 
     e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
@@ -657,7 +749,18 @@ top10var_por_album <- function(var){
   
   # Era para estar em outra ordem...
   
-  g1 <- songs %>% 
+  renamed_songs <- songs %>% 
+    mutate(
+      across(6:14, ~round(., 2)),
+      SName = case_when(
+        SName == "I'll Try Anything Once (You Only Live Once Demo)" ~ "I'll Try Anything Once\n(You Only Live Once Demo)",
+        SName == "Mercy Mercy Me (The Ecology)" ~ "Mercy Mercy Me\n(The Ecology)",
+        SName == "Life Is Simple In The Moonlight" ~ "Life Is Simple\nIn The Moonlight", 
+        T ~ SName)
+      )
+  
+  g1 <- renamed_songs %>% 
+    mutate() %>% 
     drop_na() %>%
     mutate(Var = !!sym(var)) %>% 
     slice_min(order_by = Var, n = 10) %>% 
@@ -673,7 +776,7 @@ top10var_por_album <- function(var){
               borderColor = '#333', borderWidth = 1,
               textStyle = list(color = '#333'))
   
-  g2 <- songs %>% 
+  g2 <- renamed_songs %>% 
     drop_na() %>%
     mutate(Var = !!sym(var)) %>% 
     slice_max(order_by = Var, n = 10) %>% 
@@ -955,10 +1058,12 @@ similaridades %>%
 ```
 
 ```{r}
+# 1/`Distância`, 
+
 similaridades %>%
   inner_join(distancias) %>%
   mutate(Dupla = paste(Song1, Song2, sep = " vs "),
-         `Distância` = 1/`Distância`) %>%
+         `Distância` = (`Distância` - min(`Distância`))/(max(`Distância`) - min(`Distância`))) %>%
   e_chart(Similaridade) %>%
   e_scatter(`Distância`,
             bind = Dupla # Define nomes para as observações
@@ -1126,3 +1231,23 @@ boxplot_por_grupo("valence")
 ```{r echo=FALSE}
 boxplot_por_grupo("tempo")
 ```
+
+# 
+
+<div class = "meunome">
+
+<!-- <audio controls autoplay> -->
+<!--   <source src="horse.mp3" type="audio/mpeg"> -->
+<!-- Your browser does not support the audio element. -->
+<!-- </audio> -->
+
+by Laura Alexandria de Oliveira
+
+<ul class="redes">
+
+<li><a class="fas fa-user" href = "https://lauraalexandria.github.io/"></a></li>
+<li><a class="fab fa-github" href = "https://github.com/lauraalexandria"></a></li>
+<li><a class="fab fa-linkedin" href = "https://www.linkedin.com/in/laura-alexandria-de-oliveira/"></a></li>
+
+</ul>
+</div>
