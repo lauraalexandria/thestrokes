@@ -114,7 +114,7 @@ div.metade {
 div.meunome {
  text-align: justify;
  position: fixed;
- top: 88%;
+ top: 75%;
  right: 77%;
 }
 
@@ -904,13 +904,13 @@ shared_variavel2 <- songs %>%
 #                   multiple = F)
 #   ),
 # 
-#   ggplotly( # QUAL O PROBLEMA DO FILTRO??
-# 
-#     ggplot() +
-#       geom_point(aes(x = shared_variavel1$data() %>% pull(valor),
-#                      y = shared_variavel2$data() %>% pull(valor)))
-# 
-#     )
+#   # ggplotly( # QUAL O PROBLEMA DO FILTRO??
+#   # 
+#   #   ggplot() +
+#   #     geom_point(aes(x = shared_variavel1$data() %>% pull(valor),
+#   #                    y = shared_variavel2$data() %>% pull(valor)))
+#   # 
+#   #   )
 # 
 # )
 
@@ -943,6 +943,8 @@ predict(model,c("beats"),type ="nearest",top_n =5) # 5 palavras mais similares
 Cossine similarity (tried to keep the 10 more common words in each song) e testar no lugar da freq, o td-idft
 
 O problema é que aqui a gente pega uma música e o sistema caça outras 5 iguais. Como faço para plotarrr
+
+Mais infos: https://help.displayr.com/hc/en-us/articles/360003127476-How-to-Create-Customized-Tables-Using-the-DT-R-Package
 
 ```{r message = F}
 freq_by_song <- songs %>% select(c(2,4)) %>% # provavelmente posso apagar
@@ -989,9 +991,13 @@ bscols(widths = c(3, NA),
   ),
 
   datatable(shared_similaridades, width = 500,
-            class = "cell-border hover row-border"#,
-            # options = list(searching = FALSE) - não tá deixando filtrar??
-            )
+            class = "cell-border hover row-border",
+            options = list(dom = 'tip')
+            ) %>% 
+    formatStyle(
+      'Similaridade',
+      backgroundColor = '#B2B1B9'
+  )
 
 )
 ```
@@ -1023,10 +1029,15 @@ bscols(widths = c(3, NA),
                   shared_distancias, ~Song2, multiple = F)
   ),
 
-  datatable(shared_distancias, width = 500,
-            class = "cell-border hover row-border"#,
-            # options = list(searching = FALSE) - não tá deixando filtrar??
-            )
+  datatable(
+    shared_distancias, width = 500,
+    class = "cell-border hover row-border",
+    options = list(dom = 'tip')
+  ) %>% 
+    formatStyle(
+      'Distância',
+      backgroundColor = '#B2B1B9'
+  )
 
 )
 
@@ -1237,13 +1248,14 @@ boxplot_por_grupo("tempo")
 <div class = "meunome">
 
 <!-- <audio controls autoplay> -->
-<!--   <source src="horse.mp3" type="audio/mpeg"> -->
-<!-- Your browser does not support the audio element. -->
+<!--   <source src = "Oasis.mp3" type = "audio/mpeg"/> -->
 <!-- </audio> -->
+
+<br/>
 
 by Laura Alexandria de Oliveira
 
-<ul class="redes">
+<ul class = "redes">
 
 <li><a class="fas fa-user" href = "https://lauraalexandria.github.io/"></a></li>
 <li><a class="fab fa-github" href = "https://github.com/lauraalexandria"></a></li>
