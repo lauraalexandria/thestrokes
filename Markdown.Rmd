@@ -990,14 +990,19 @@ bscols(widths = c(3, NA),
                   shared_similaridades, ~Song2, multiple = F)
   ),
 
-  datatable(shared_similaridades, width = 500,
-            class = "cell-border hover row-border",
-            options = list(dom = 'tip')
-            ) %>% 
-    formatStyle(
-      'Similaridade',
-      backgroundColor = '#B2B1B9'
-  )
+  datatable(
+    shared_similaridades, width = 500,
+    class = "cell-border hover row-border",
+    options = list(
+      dom = 'tip',
+      initComplete = JS(
+        "function(settings, json) {",
+        "$(this.api().table().header()).css({'color' : '#ffffff'});",
+        "$(this.api().table().header()).css({'background-color': '#749eb3'});",
+        "}"
+        )
+      )
+  ) 
 
 )
 ```
@@ -1032,12 +1037,21 @@ bscols(widths = c(3, NA),
   datatable(
     shared_distancias, width = 500,
     class = "cell-border hover row-border",
-    options = list(dom = 'tip')
-  ) %>% 
-    formatStyle(
-      'Distância',
-      backgroundColor = '#B2B1B9'
-  )
+    options = list(
+      dom = 'tip',
+      initComplete = JS(
+        "function(settings, json) {",
+        "$(this.api().table().header()).css({'color' : '#ffffff'});",
+        "$(this.api().table().header()).css({'background-color': '#749eb3'});",
+        "}"
+        )
+      )
+  ) 
+  # %>% 
+  #   formatStyle(
+  #     'Distância',
+  #     backgroundColor = '#B2B1B9'
+  # )
 
 )
 
@@ -1115,7 +1129,7 @@ Com 5 clusters, um deles fica com apenas uma observação...
 k3 <- kmeans(data_cluster, centers = 3, nstart = 25)
 pca <- prcomp(data_cluster)
 
-fviz_cluster(k3, geom = "point",  data = data_cluster) + ggtitle("k = 3")
+# fviz_cluster(k3, geom = "point",  data = data_cluster) + ggtitle("k = 3")
 
 cbind(data_cluster,
       agrupamento = fitted(k3, method = "class"),
@@ -1162,9 +1176,18 @@ bscols(widths = c(3, NA),
   ),
 
   datatable(shared_agrupamentos, width = 500,
-            class = "cell-border hover row-border"#,
-            # options = list(searching = FALSE) - não tá deixando filtrar??
-            )
+            class = "cell-border hover row-border",
+    options = list(
+      dom = 'tip',
+      scrollX = TRUE,
+      initComplete = JS(
+        "function(settings, json) {",
+        "$(this.api().table().header()).css({'color' : '#ffffff'});",
+        "$(this.api().table().header()).css({'background-color': '#749eb3'});",
+        "}"
+        )
+      )
+    )
 
 )
 ```
