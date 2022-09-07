@@ -203,9 +203,15 @@ e_common(theme = "london")
 
 # Introduction
 
-I love The Strokes, and a WebScrap 82 songs of them
+In 2020, I discover The New Abnormal album and I started to be obsessed with The Strokes, beyond listen to the album over and over, I also knew their previous work and loved as well. When I decided to try a project with webscraping and sentiment analysis, it seemed the perfect opportunity to use the songs i love so much and maybe understand some pattern from them. So here we go!
+
+I used data from Spotify and Vagalume, so I collect the lyrics and some numerical features that Spotify creates to measure some features of the songs, nad also which of the albumns the musics are from.
+
+Some of the references I used are:
 
 # Word Clouds
+
+The first analysis is a Word Cloud, here we used all lyrics, exclude the stopwords. The bigger the word, more frequent it is in The Strokes discography. Here we can see a huge focus on the words ```time``` and ```wanna```. (Well, to me seens like the song [Under Control](https://www.youtube.com/watch?v=4895ajU27b0) contribuited a lot for this result)
 
 ```{r message=F, warning=F}
 contagem <- songs %>% select(c(2,4)) %>%
@@ -228,20 +234,28 @@ contagem %>%
 
 # Number of words by Song
 
+Next, the question was the number of words in each song, to analise this feature a histogram was created and it is possible to see that the majority of the songs have between 150 to 250 words, here the stop words were keep on the data. The realesed song with least words was [Metabolism](https://www.youtube.com/watch?v=5YEHqiyb7AE) with about 3 minutes and 70 words and the song with the biggest amount of words is [Eternal Summer](https://www.youtube.com/watch?v=5c3EjeP2x-Q) which has aproximately 6 minutes long where we can listen to 395 words.
+
+
 ```{r message=FALSE, warning=FALSE}
-num_por_song <- songs %>% select(c(2,4)) %>% 
+num_por_song <- songs %>% 
+  select(c("SName", "letras", "album_name")) %>% 
   unnest_tokens(word, letras) %>%
-  anti_join(stop_words) %>%
-  group_by(SName) %>% 
+  # anti_join(stop_words) %>%
+  group_by(SName, album_name) %>% 
   count() %>% ungroup()
 
 num_por_song  %>% 
+  #group_by(album_name) %>% 
   e_charts() %>%
   e_histogram(n) %>% 
   e_tooltip(trigger = "axis", backgroundColor = "rgb(255,255,255,0.8)", 
             borderColor = '#333', borderWidth = 1,
             textStyle = list(color = '#333'))
 ```
+
+WHAT ABOUT A DIVISION BY ALBUM??
+
 
 ```{r message=FALSE, warning=FALSE}
 menor <- num_por_song %>% slice_min(order_by = n, n = 1)
@@ -298,6 +312,10 @@ Here, I use 3 subunits of size 4 (4x3=12). The last column is used for a plot. Y
 
 # Sentiment Analysis
 
+Other possible analysis is the Sentiment Analysis, here used the NRC technique, each word receive a label with a sentiment, there are 10 sentiments: Anger, Anticipation, Disgust, Fear, Joy, Negative, Positive, Sadness, Surprise, Trust. Unfortunately, this analysis doesn't capture the context of the words, a aspect that changes the whole meaning, but let's go! 
+
+In the first plot is possible to see the frequency of all sentiments beyond all songs, the Negative sentiment is the most frequent and then we have the Positive sentiment, so it's no possible to highlight nothing. In the next part we can compare the songs in the same album.
+
 ```{r message=FALSE, warning=FALSE}
 sentiments <- get_sentiments("nrc")
 
@@ -318,7 +336,6 @@ songs_e_sent %>%
   e_labels(position = "right")
 ```
 
-Now you can choose a song
 
 ```{r message = F}
 sent_por_mus <- songs_e_sent %>% 
@@ -401,12 +418,15 @@ prop_sent_by_song <- function(input_album){
 
 ### Is This It
 
+The album _Is This It_ has a lot of Negative sentiment, mainly the sonh whos name the album [Is This It](https://www.youtube.com/watch?v=Hgqp7l9s_9o) on the other hand we have the song [Last Night](https://www.youtube.com/watch?v=TOypSnKFHrE) with the biggest proportion of words with Positive sentiments.
+
 ```{r echo=FALSE}
 prop_sent_by_song("Is This It")
 ```
 
- 
 ### Room On Fire
+
+Here in _Room on Fire_, the song [The End Has No End](https://www.youtube.com/watch?v=8sQoX12zo-A) is the the one with the biggest amount of Negative words, while [Meet Me In The Bathroom](https://www.youtube.com/watch?v=Ykvf7oR0JBY) has the biggest amount of Positive words.
 
 ```{r echo=FALSE}
 prop_sent_by_song("Room On Fire")
@@ -414,17 +434,23 @@ prop_sent_by_song("Room On Fire")
 
 ### First Impressions of Earth
 
+In the third album of the band, we can see the the song [Killing Lies](https://www.youtube.com/watch?v=7BhWk7knpfo) where a significant proportion of the words are Negative and other negative fellings, and the famous [You Only Live Once](https://www.youtube.com/watch?v=pT68FS3YbQ4) has a bunch of Positive words. 
+
 ```{r echo=FALSE}
 prop_sent_by_song("First Impressions Of Earth")
 ```
 
 ### Angles
 
+Now, in the _Angles_ album we have [You're So Right](https://www.youtube.com/watch?v=L-5Tdlhmh0Y) with the biggest proportion of Negative sentiments and [Two Kind Of Happinnes](https://www.youtube.com/watch?v=dr-KUP55hC8) in the opposite feature.
+
 ```{r echo=FALSE}
 prop_sent_by_song("Angles")
 ```
 
 ### Comedown Machine
+
+Here we see a ....
 
 ```{r echo=FALSE}
 prop_sent_by_song("Comedown Machine")
@@ -714,7 +740,6 @@ gauge_trios("Trust")
 ```{r}
 boxplot_por_album <- function(var){
   
-  # Ainda estressada com os labels do eixo x;
   # E as tooltips com Is This It em tudo??
   
   songs %>% 
