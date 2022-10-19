@@ -450,7 +450,7 @@ prop_sent_by_song("Angles")
 
 ### Comedown Machine
 
-Here we see a ....
+Here we see a some interesting behaviors, we have a song which contains just words with negative aspects, [Call it Fate, Call it Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg), on the other side, [Tap Out](https://www.youtube.com/watch?v=6KOT5kg59KI) has only positive aspects.
 
 ```{r echo=FALSE}
 prop_sent_by_song("Comedown Machine")
@@ -458,17 +458,23 @@ prop_sent_by_song("Comedown Machine")
 
 ### Future Present Past
 
+In this EP, with only 3 songs, which are organized in in the top of positiviness with [Oblivious](https://www.youtube.com/watch?v=jEjdwhVuW74), followed by [Threat of Joy](https://www.youtube.com/watch?v=IJNgvS-sA-s) and [Drag Queen](youtube.com/watch?v=ts7cgeZC5J0)
+
 ```{r echo=FALSE}
 prop_sent_by_song("Future Present Past")
 ```
 
 ### The New Abnormal
 
+About the last album of the band (but I hope more is coming lol) it is possible to see that [The Adults Are Talking](https://www.youtube.com/watch?v=ewOPQZZn4SY) has the biggest proportion of negative sentiments, while [Ode to the Mets](https://www.youtube.com/watch?v=BjC0KUxiMhc) has the biggest proportion of positive sentiments, although, this proportion represents just a little more then 50%.
+
 ```{r echo=FALSE}
 prop_sent_by_song("The New Abnormal")
 ```
 
 ### Others
+
+And finally we have some Side-B songs, demos and covers from the guys that were put on the site where I webscrap. The most positives songs are Elephant Song, Hawaii and I'll Try Anything Once (by the way, this is my favorite song ever). And with the negatives there is Modern Girls & Old Fashioned Men 
 
 ```{r echo=FALSE}
 prop_sent_by_song("Others")
@@ -504,8 +510,11 @@ gauge_trios <- function(sent){
 }
 ```
 
+It is possible to analyse in the oppostite way, in other words, we can fix the sentiments and them look which songs have the biggest proportion.
 
 ### Anger
+
+The three songs with the biggest proportion of anger words are: [Is This It](https://www.youtube.com/watch?v=Hgqp7l9s_9o),[You're So Right](https://www.youtube.com/watch?v=L-5Tdlhmh0Y) and [The Adults Are Talking](https://www.youtube.com/watch?v=ewOPQZZn4SY), all of them with more than 1/5 of the words as anger sentiments. Each song is from a different album, from diffenrents moments of time.
 
 ```{r echo=FALSE}
 gauge_trios("Anger")
@@ -514,11 +523,15 @@ gauge_trios("Anger")
 
 ### Anticipation
 
+About the Antecipation sentiment, we can see that the song [You Talk Way Too Much](https://www.youtube.com/watch?v=G9OLlofojX8) has 63% of the words with this sentiment, which is increadible, in the second position we have [Call It Fate, Call It Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg) with 50% of Anticapation words and then [Vision of Division](https://www.youtube.com/watch?v=jBx9gQyiYoo). Also, each song is from a different album.
+
 ```{r echo=FALSE}
 gauge_trios("Anticipation")
 ```
 
 ### Disgust
+
+When we see the Disgust sentiment, [Call It Fate, Call It Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg) is present again, followed by At The Summer, probably a cover from them, and then [At The Door](https://www.youtube.com/watch?v=9CAz_vvsK9M).
 
 ```{r echo=FALSE}
 gauge_trios("Disgust")
@@ -527,11 +540,15 @@ gauge_trios("Disgust")
 
 ### Fear
 
+Now, we can see the songs with the biggest proportion of Fear related words, the first one is [Ask Me Anything](https://www.youtube.com/watch?v=UsW040wrMNA), followed by the EP sond [Drag Queen](https://www.youtube.com/watch?v=mBotY_n27VA) and in the thirth place we have [50/50](https://www.youtube.com/watch?v=_3YYEU4_x_0)
+
 ```{r echo=FALSE}
 gauge_trios("Fear")
 ```
 
 ### Joy
+
+[Laaaaaaaaast Nite](https://www.youtube.com/watch?v=TOypSnKFHrE) is the song with the biggest amount of Joyfull words among The Strokes songs, next we have [Tap Out](https://www.youtube.com/watch?v=6KOT5kg59KI) with almost 29% of words with Joy sentiment, and finally [Meet Me In The Bathroom](https://www.youtube.com/watch?v=Ykvf7oR0JBY)
 
 ```{r echo=FALSE}
 gauge_trios("Joy")
@@ -539,11 +556,15 @@ gauge_trios("Joy")
 
 ### Negative
 
+Again we see [Is This It](https://www.youtube.com/watch?v=Hgqp7l9s_9o), now with a expressive proportion of negative words, with a similar value there is [Juicebox](https://www.youtube.com/watch?v=GoltwBHXCx8) and them the cover song Rhythm Song from a Demo?
+
 ```{r echo=FALSE}
 gauge_trios("Negative") 
 ```
 
 ### Positive
+
+About the Positive sentiment words, [Oblivious](https://www.youtube.com/watch?v=jEjdwhVuW74), with more than 50% of the song, followed by [Tap Out](https://www.youtube.com/watch?v=6KOT5kg59KI) and then [Laaaaaaaaast Nite](https://www.youtube.com/watch?v=TOypSnKFHrE), which has also a lot of joyfull words.
 
 ```{r echo=FALSE}
 gauge_trios("Positive")
@@ -551,17 +572,23 @@ gauge_trios("Positive")
 
 ### Sadness
 
+The song with the biggest proportion of sadness words is [Modern Girls & Old Fashion Men](https://www.youtube.com/watch?v=38NWydYtEKY), the second one is [Post Modern Girls](https://www.youtube.com/watch?v=kin3__wyOos), both with Regina Spektor, what a coincidence, and [Take It Or Leave It](https://www.youtube.com/watch?v=bG7ZMiH6xA4) in the thisd position.
+
 ```{r echo=FALSE}
 gauge_trios("Sadness") 
 ```
 
 ### Surprise
 
+Again, you see [Take It Or Leave It](https://www.youtube.com/watch?v=bG7ZMiH6xA4), the next song is [Metabolism](https://www.youtube.com/watch?v=5YEHqiyb7AE) and there is also [Automatic Stop](https://www.youtube.com/watch?v=wveUjX6KFR8). Again a case which every song is from a album.
+
 ```{r echo=FALSE}
 gauge_trios("Surprise")
 ```
 
 ### Trust
+
+[Tap Out](https://www.youtube.com/watch?v=6KOT5kg59KI) is the song with the biggest proportion of trust sentiment, together we see [Ode To The Mets](https://www.youtube.com/watch?v=BjC0KUxiMhc) and [Alone, Together](https://www.youtube.com/watch?v=oUW7V4X0My0)
 
 ```{r echo=FALSE}
 gauge_trios("Trust")
@@ -737,6 +764,8 @@ gauge_trios("Trust")
 
 # Dados Spotify {.tabset .tabset-fade .tabset-pills}
 
+Acho que é bom eu tirar esses boxplots por jitters, por exemplo o Ep com 3 músicas fica bem difícil de comparar.
+
 ```{r}
 boxplot_por_album <- function(var){
   
@@ -765,6 +794,32 @@ boxplot_por_album <- function(var){
     e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
               borderColor = '#333', borderWidth = 1,
               textStyle = list(color = '#333')) %>% 
+    e_x_axis(axisLabel = list(fontSize = 9)) # %>% 
+    # e_y_axis(type ='category') %>% e_x_axis(type ='value')
+  
+}
+
+jitter_por_album <- function(var){
+  
+  songs %>% 
+    mutate(
+      album_name = case_when(
+        album_name == "First Impressions Of Earth" ~ "First\nImpressions\nOf Earth",
+        album_name == "Comedown Machine" ~ "Comedown\nMachine",
+        album_name == "Future Present Past" ~ "Future\nPresent\nPast",
+        album_name == "The New Abnormal" ~ "The New\nAbnormal",
+        T ~ album_name),
+      choosen_var = !!sym(var)
+      )  %>% 
+    filter(album_name != "Fast Animals") %>% 
+    e_charts(album_name) %>%  
+    e_scatter(choosen_var, symbol_size = 5) %>%
+    e_scatter(choosen_var, jitter_factor = 2, symbol_size = 6) %>% 
+    e_color("#AC3D3D") %>% 
+    e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
+              borderColor = '#333', borderWidth = 1,
+              textStyle = list(color = '#333')) %>% 
+    e_legend(show = F) %>% 
     e_x_axis(axisLabel = list(fontSize = 9)) # %>% 
     # e_y_axis(type ='category') %>% e_x_axis(type ='value')
   
@@ -855,56 +910,56 @@ top10var_por_album <- function(var){
 ## Dançabilidade
 
 ```{r echo=FALSE}
-boxplot_por_album("danceability")
+jitter_por_album("danceability")
 top10var_por_album("danceability")
 ```
 
 ## Energia
 
 ```{r echo=FALSE}
-boxplot_por_album("energy")
+jitter_por_album("energy")
 top10var_por_album("energy")
 ```
 
 ## Volume
 
 ```{r echo=FALSE}
-boxplot_por_album("loudness")
+jitter_por_album("loudness")
 top10var_por_album("loudness")
 ```
 
 ## Falado
 
 ```{r echo=FALSE}
-boxplot_por_album("speechiness")
+jitter_por_album("speechiness")
 top10var_por_album("speechiness")
 ```
 
 ## Acústico
 
 ```{r echo=FALSE}
-boxplot_por_album("acousticness")
+jitter_por_album("acousticness")
 top10var_por_album("acousticness")
 ```
 
 ## Instrumentalidade
 
 ```{r echo=FALSE}
-boxplot_por_album("instrumentalness")
+jitter_por_album("instrumentalness")
 top10var_por_album("instrumentalness")
 ```
 
 ## Valência
 
 ```{r echo=FALSE}
-boxplot_por_album("valence")
+jitter_por_album("valence")
 top10var_por_album("valence")
 ```
 
 ## Tempo 
 
 ```{r echo=FALSE}
-boxplot_por_album("tempo")
+jitter_por_album("tempo")
 top10var_por_album("tempo")
 ```
 
