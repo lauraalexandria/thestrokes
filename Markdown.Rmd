@@ -762,9 +762,8 @@ gauge_trios("Trust")
 <!--   theme_void() -->
 <!-- ``` -->
 
-# Dados Spotify {.tabset .tabset-fade .tabset-pills}
+# Spotify Data {.tabset .tabset-fade .tabset-pills}
 
-Acho que é bom eu tirar esses boxplots por jitters, por exemplo o Ep com 3 músicas fica bem difícil de comparar.
 
 ```{r}
 boxplot_por_album <- function(var){
@@ -809,16 +808,20 @@ jitter_por_album <- function(var){
         album_name == "Future Present Past" ~ "Future\nPresent\nPast",
         album_name == "The New Abnormal" ~ "The New\nAbnormal",
         T ~ album_name),
-      choosen_var = !!sym(var)
+      choosen_var = !!sym(var),
+      album_name = factor(album_name, levels=c("Is This It", "Room On Fire", "First\nImpressions\nOf Earth", "Angles", "Comedown\nMachine", "Future\nPresent\nPast", "The New\nAbnormal", "Others"))
       )  %>% 
     filter(album_name != "Fast Animals") %>% 
+    arrange(album_name) %>% 
     e_charts(album_name) %>%  
-    e_scatter(choosen_var, symbol_size = 5) %>%
-    e_scatter(choosen_var, jitter_factor = 2, symbol_size = 6) %>% 
-    e_color("#AC3D3D") %>% 
-    e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
-              borderColor = '#333', borderWidth = 1,
-              textStyle = list(color = '#333')) %>% 
+    # e_scatter(choosen_var, symbol_size = 5, name=var) %>%
+    e_scatter(choosen_var, jitter_factor = 2, symbol_size = 6, name=str_to_title(var), bind=SName) %>% 
+    e_color("#AC3D3D") %>%
+    e_tooltip(
+        backgroundColor = "rgb(255,255,255,0.8)",
+        borderColor = '#333', borderWidth = 1,
+        textStyle = list(color = '#333')
+     ) %>% 
     e_legend(show = F) %>% 
     e_x_axis(axisLabel = list(fontSize = 9)) # %>% 
     # e_y_axis(type ='category') %>% e_x_axis(type ='value')
@@ -850,7 +853,7 @@ top10var_por_album <- function(var){
     e_flip_coords() %>% 
     e_labels(position = "right") %>% 
     e_grid(left = "40%") %>% 
-    e_title("Valores Menores") %>% 
+    e_title("Lower Values") %>% 
     e_legend(bottom = 0) %>% 
     e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
               borderColor = '#333', borderWidth = 1,
@@ -866,7 +869,7 @@ top10var_por_album <- function(var){
     e_flip_coords() %>% 
     e_labels(position = "right") %>% 
     e_grid(left = "40%") %>% 
-    e_title("Valores Maiores") %>%
+    e_title("Higher Values") %>%
     e_legend(bottom = 0) %>% 
     e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
               borderColor = '#333', borderWidth = 1,
@@ -907,65 +910,109 @@ top10var_por_album <- function(var){
 # }
 ```
 
-## Dançabilidade
+## Danceability
+
+Here we can see that the majority of The Strokes song has betwenn 0.3 and 0.7 of the Score of Danceability of Spotify. Some of the "outliers" are: [15 Minutes](https://www.youtube.com/watch?v=-ovJyxcWkro) with the lowest score of Danceability, in the other side [Tap Out]() has the biggest one. There is a curiosity, I would never imagine the Hawaii with less "danceality" than I'll Try Anything Once, actually, I expect Hawaii with the higher score.
 
 ```{r echo=FALSE}
 jitter_por_album("danceability")
+```
+
+```{r echo=FALSE}
 top10var_por_album("danceability")
 ```
 
-## Energia
+## Energy
+
+Between the lowest energy songs we have [Call It Fate, Call It Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg), I'll Try Anything Once, [Call Me Back](https://www.youtube.com/watch?v=ToTNGU8Zaww), [Ask Me Anything](https://www.youtube.com/watch?v=UsW040wrMNA) and [At The Door](https://www.youtube.com/watch?v=9CAz_vvsK9M), all of them make pretty sense to me. While the most energy song is [Juicebox](https://www.youtube.com/watch?v=GoltwBHXCx8) very close to [You Talk Way Too Much](https://www.youtube.com/watch?v=G9OLlofojX8) and [Partners in Crime](https://www.youtube.com/watch?v=7w5tKFh9pd0). It is also possible to say that the songs form First Impressions on Earth are have a little more energy than the other albums.
 
 ```{r echo=FALSE}
 jitter_por_album("energy")
+```
+
+```{r echo=FALSE}
 top10var_por_album("energy")
 ```
 
-## Volume
+## Loudness
+
+About loudness a repeat of some songs talked before, they are [Call It Fate, Call It Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg), I'll Try Anything Once, [Call Me Back](https://www.youtube.com/watch?v=ToTNGU8Zaww) and [Ask Me Anything](https://www.youtube.com/watch?v=UsW040wrMNA) in the bottom of the chart. While in the biggest we see [On the Other Side](https://www.youtube.com/watch?v=fzR1-OacD8o), [You Only Live Once](https://www.youtube.com/watch?v=pT68FS3YbQ4),[Juicebox](https://www.youtube.com/watch?v=GoltwBHXCx8) and [The Way It Is](https://www.youtube.com/watch?v=Kj1a7WQta4w). It is curious to see that the first album was one of the lowest loudness and the next one was already the opposite in this metric.
 
 ```{r echo=FALSE}
 jitter_por_album("loudness")
+```
+
+```{r echo=FALSE}
 top10var_por_album("loudness")
 ```
 
-## Falado
+## Speechiness
+
+Here we can see that The Strokes songs aren't too speak, the majority of the songs has less than 0.06 of the Speechiness Score. Again [Juicebox](https://www.youtube.com/watch?v=GoltwBHXCx8) is a highlight the next one is [All The Time](https://www.youtube.com/watch?v=TJC8zeu3MHk). The song of the less value of Speechiness is [Between Love & Hate](https://www.youtube.com/watch?v=b2A4gJnHsVg).
 
 ```{r echo=FALSE}
 jitter_por_album("speechiness")
+```
+
+```{r echo=FALSE}
 top10var_por_album("speechiness")
 ```
 
-## Acústico
+## Acousticness
+
+The songs in general are also low to acoustic score, and the same musics from the low danceability are here in the maximum values: [Call It Fate, Call It Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg), I'll Try Anything Once, [Call Me Back](https://www.youtube.com/watch?v=ToTNGU8Zaww), [Ask Me Anything](https://www.youtube.com/watch?v=UsW040wrMNA) and [At The Door](https://www.youtube.com/watch?v=9CAz_vvsK9M).
 
 ```{r echo=FALSE}
 jitter_por_album("acousticness")
+```
+
+```{r echo=FALSE}
 top10var_por_album("acousticness")
 ```
 
-## Instrumentalidade
+## Instrumentalness
+
+This is the variable with the biggest variance in all albuns, so it is difficult to highlight any song.
 
 ```{r echo=FALSE}
 jitter_por_album("instrumentalness")
+```
+
+```{r echo=FALSE}
 top10var_por_album("instrumentalness")
 ```
 
-## Valência
+## Valence
+
+(Nick) Valence is about the positivity in the song too, here we the three biggest are [You Only Live Once](https://www.youtube.com/watch?v=pT68FS3YbQ4), [One way trigger](https://www.youtube.com/watch?v=reifFcUoTKw) and [Alone, Together](https://www.youtube.com/watch?v=oUW7V4X0My0) and in the other side we have [All The Time](https://www.youtube.com/watch?v=TJC8zeu3MHk), [Selfless](https://www.youtube.com/watch?v=1-W6whvn8Bs) and [Heart In A Cage](https://www.youtube.com/watch?v=3dyNbMVfeyM). All seems pretty acurate. Maybe there is a tendency of decrease relate to the time.
 
 ```{r echo=FALSE}
 jitter_por_album("valence")
+```
+
+```{r echo=FALSE}
 top10var_por_album("valence")
 ```
 
 ## Tempo 
 
+In the tempo there are also a concentraicitio nin hte values, with [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) as a higlight and [15 Minutes](https://www.youtube.com/watch?v=-ovJyxcWkro) and [Hard to Explain](https://www.youtube.com/watch?v=BXkm6h6uq0k) in the oppostite value.
+
 ```{r echo=FALSE}
 jitter_por_album("tempo")
+```
+
+```{r echo=FALSE}
 top10var_por_album("tempo")
 ```
 
-#
+# 
+
+Here there are the correlation between the spotify features seen.  
 
 ```{r}
+# Na verdade, eu nem lembro o que eu tava tentando fazer com isso
+
 shared_variavel1 <- songs %>% 
   pivot_longer(6:14, names_to = "var", values_to = "valor") %>% 
   select(6:7) %>% 
@@ -975,29 +1022,30 @@ shared_variavel2 <- songs %>%
   select(6:7) %>% 
   SharedData$new()
 
-# bscols(widths = c(3, NA),
-# 
-#   list(
-#     filter_select("varx", "Eixo X", shared_variavel1, ~var,
-#                   multiple = F),
-#     filter_select("vary", "Eixo Y", shared_variavel2, ~var,
-#                   multiple = F)
-#   ),
-# 
-#   # ggplotly( # QUAL O PROBLEMA DO FILTRO??
-#   # 
-#   #   ggplot() +
-#   #     geom_point(aes(x = shared_variavel1$data() %>% pull(valor),
-#   #                    y = shared_variavel2$data() %>% pull(valor)))
-#   # 
-#   #   )
-# 
-# )
+bscols(widths = c(3, NA),
 
+  list(
+    filter_select("varx", "Eixo X", shared_variavel1, ~var,
+                  multiple = F),
+    filter_select("vary", "Eixo Y", shared_variavel2, ~var,
+                  multiple = F)
+  ),
+
+  ggplotly( # QUAL O PROBLEMA DO FILTRO??
+
+    ggplot() +
+      geom_point(aes(x = shared_variavel1$data() %>% pull(valor),
+                     y = shared_variavel2$data() %>% pull(valor)))
+
+    )
+
+)
 
 ```
 
-# Similaridades
+# Similarities
+
+Based on the Spotify features and the words from each song, it is possible to mesure the similarity between than, in the next visualizations we can see some of them.
 
 Primeira tentativa com word2vec que eu não achei tão legal o resultado
 
@@ -1018,13 +1066,11 @@ predict(model,c("beats"),type ="nearest",top_n =5) # 5 palavras mais similares
 
 ```
 
-## Similaridade entre as letras
+## Similarity between lyrics
 
-Cossine similarity (tried to keep the 10 more common words in each song) e testar no lugar da freq, o td-idft
+First, we will look to the lyrics, the similarity here was calculated with the _Cossine Similarity_, largely used to describe the similarity between points. When we have two points in a plan, they can be represented as vectors from the (0,0) coordinate in the plan and it is possible to messure a angle using those vectors, if this angle is small, we can say that the points are similar, in other words, the lower the Cossine value bigger the similarity.
 
-O problema é que aqui a gente pega uma música e o sistema caça outras 5 iguais. Como faço para plotarrr
-
-Mais infos: https://help.displayr.com/hc/en-us/articles/360003127476-How-to-Create-Customized-Tables-Using-the-DT-R-Package
+As we can see, that the calculus is done with pairs of songs, with the table below we can set a song and look witch songs are more or less similar or to check a specific pair in yout mind.
 
 ```{r message = F}
 freq_by_song <- songs %>% select(c(2,4)) %>% # provavelmente posso apagar
@@ -1087,7 +1133,13 @@ bscols(widths = c(3, NA),
 )
 ```
 
-## Similaridade entre as variáveis
+Some interresting highlights are: 
+
+ - Songs that are demos are tha most correlated with their final version, obviously;
+ - The fisrt unrelates and released songs that appear is the pair [Vision of Division](https://www.youtube.com/watch?v=jBx9gQyiYoo) and [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) with a score equals to 0.645;
+ - The song [You Talk Way Too Much](https://www.youtube.com/watch?v=G9OLlofojX8) is righly related with a bunch of songs;
+
+## Similarity between features
 
 Diferente da outra função, por que as colunas não são as músicas;
 Aqui já pode ser distância também;
@@ -1099,7 +1151,7 @@ distancias <- get_dist(songs %>%
   as.matrix() %>%
   as.data.frame() %>%
   rownames_to_column("Song1") %>%
-  pivot_longer(2:74, names_to = "Song2", values_to = "Distância") %>%
+  pivot_longer(-1, names_to = "Song2", values_to = "Distância") %>%
   filter(`Distância` != 0) %>%
   mutate(`Distância` = round(`Distância`, 2))
 
@@ -1188,7 +1240,7 @@ similaridades %>%
   )
 ```
 
-# Clusterização
+# Cluster
 
 ```{r}
 set.seed(123)
@@ -1298,43 +1350,43 @@ boxplot_por_grupo <- function(var){
 ```
 
 
-### Dançabilidade
+### Danceability
 
 ```{r echo=FALSE}
 boxplot_por_grupo("danceability")
 ```
 
-### Energia
+### Energy
 
 ```{r echo=FALSE}
 boxplot_por_grupo("energy")
 ```
 
-### Volume
+### Loudness
 
 ```{r echo=FALSE}
 boxplot_por_grupo("loudness")
 ```
 
-### Falado
+### Speechiness
 
 ```{r echo=FALSE}
 boxplot_por_grupo("speechiness")
 ```
 
-### Acústico
+### Acousticness
 
 ```{r echo=FALSE}
 boxplot_por_grupo("acousticness")
 ```
 
-### Instrumentalidade
+### Instrumentalness
 
 ```{r echo=FALSE}
 boxplot_por_grupo("instrumentalness")
 ```
 
-### Valência
+### Valence
 
 ```{r echo=FALSE}
 boxplot_por_grupo("valence")

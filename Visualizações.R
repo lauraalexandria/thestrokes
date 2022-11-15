@@ -16,7 +16,7 @@ library(echarts4r)
 ## https://cran.r-project.org/web/packages/ruimtehol/vignettes/ground-control-to-ruimtehol.pdf
 ## https://michaelmccarthy.netlify.app/post/embedding-multimedia-files-in-r-markdown-html-documents/
 ## http://www.bnosac.be/index.php/blog/100-word2vec-in-R
-
+## https://help.displayr.com/hc/en-us/articles/360003127476-How-to-Create-Customized-Tables-Using-the-DT-R-Package
 
 ## IDEIAS
 # 1 - Tentar deixar a nuvem com formato específico;
