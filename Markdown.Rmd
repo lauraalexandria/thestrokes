@@ -912,7 +912,7 @@ top10var_por_album <- function(var){
 
 ## Danceability
 
-Here we can see that the majority of The Strokes song has betwenn 0.3 and 0.7 of the Score of Danceability of Spotify. Some of the "outliers" are: [15 Minutes](https://www.youtube.com/watch?v=-ovJyxcWkro) with the lowest score of Danceability, in the other side [Tap Out]() has the biggest one. There is a curiosity, I would never imagine the Hawaii with less "danceality" than I'll Try Anything Once, actually, I expect Hawaii with the higher score.
+Here we can see that the majority of The Strokes song has betwenn 0.3 and 0.7 of the Score of Danceability of Spotify. Some of the "outliers" are: [15 Minutes](https://www.youtube.com/watch?v=-ovJyxcWkro) with the lowest score of Danceability, in the other side [Tap Out](https://www.youtube.com/watch?v=6KOT5kg59KI) has the biggest one. There is a curiosity, I would never imagine the Hawaii with less "danceality" than I'll Try Anything Once, actually, I expect Hawaii with the higher score.
 
 ```{r echo=FALSE}
 jitter_por_album("danceability")
@@ -996,7 +996,7 @@ top10var_por_album("valence")
 
 ## Tempo 
 
-In the tempo there are also a concentraicitio nin hte values, with [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) as a higlight and [15 Minutes](https://www.youtube.com/watch?v=-ovJyxcWkro) and [Hard to Explain](https://www.youtube.com/watch?v=BXkm6h6uq0k) in the oppostite value.
+In the tempo there are also a concentraicition in the values, with [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) as a higlight and [15 Minutes](https://www.youtube.com/watch?v=-ovJyxcWkro) and [Hard to Explain](https://www.youtube.com/watch?v=BXkm6h6uq0k) in the oppostite value.
 
 ```{r echo=FALSE}
 jitter_por_album("tempo")
@@ -1144,6 +1144,15 @@ Some interresting highlights are:
 Diferente da outra função, por que as colunas não são as músicas;
 Aqui já pode ser distância também;
 
+Here the Spotify features were used, ad the distance choosen was the Euclidian Distance, so a big distance means low similirity and vice versa. The use of the table is the same as the previous.  
+
+Some interresting highlights are:
+
+- The pair with the biggest distance is [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) and [Hard To Explain](https://www.youtube.com/watch?v=BXkm6h6uq0k), with a distance equal to 117.41;
+- Actually, [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) is present in a bunch of the top pairs (the firsts 15 pairs, to be more accurate, and in others positions), maybe we can say this is the most different song of the band? Besides that, the song most close is [Not The Same Anymore](https://www.youtube.com/watch?v=sY1U0eJV5es) with a distance of 22,64;
+- In the other side, the pair more similar is [Tap Out](https://www.youtube.com/watch?v=6KOT5kg59KI) and [What Ever Happened?](https://www.youtube.com/watch?v=yQOJTLylm-A) with a distance of 0.48. 
+
+
 ```{r}
 distancias <- get_dist(songs %>%
                          column_to_rownames("SName") %>%
@@ -1189,7 +1198,12 @@ bscols(widths = c(3, NA),
 
 ```
 
-O esperado era existir alguma correlação negativa
+What if the two similarities have a association? This is the question the nexts charts try to answer. Unfortunally, the charts show an unexpected relation, because I was expecying a negative correlation but the two measures aren't so correlated. 
+
+Maybe some of the points more close with the desired correlation are Hard to Explain vs Undercover the Darkness and  15 Minutes vs Undercover the Darkness, where we see a high distance with a low cossine similarity, while the pair  Fast Animals vs Slow Animals shows the completely oppositive pattern. 
+
+A attempt with the inverse of the Distance was also made to try see the features with the same logic of similarity, but the relation keep pretty similar.
+
 
 ```{r}
 similaridades %>%
@@ -1201,6 +1215,7 @@ similaridades %>%
             ) %>%
   e_loess(`Distância` ~ Similaridade, showSymbol = FALSE) %>%
   e_lm(`Distância` ~ Similaridade, showSymbol = FALSE) %>%
+  e_axis_labels(x = "Cossine Similarity - Lyrics", y = "Euclydian Distance - Spotify Features") %>% 
   e_tooltip(formatter = htmlwidgets::JS("
       function(params){
         return('<strong>' + params.name +
@@ -1214,33 +1229,41 @@ similaridades %>%
   )
 ```
 
-```{r}
-# 1/`Distância`, 
 
-similaridades %>%
-  inner_join(distancias) %>%
-  mutate(Dupla = paste(Song1, Song2, sep = " vs "),
-         `Distância` = (`Distância` - min(`Distância`))/(max(`Distância`) - min(`Distância`))) %>%
-  e_chart(Similaridade) %>%
-  e_scatter(`Distância`,
-            bind = Dupla # Define nomes para as observações
-            ) %>%
-  e_loess(`Distância` ~ Similaridade, showSymbol = FALSE) %>%
-  e_lm(`Distância` ~ Similaridade, showSymbol = FALSE) %>%
-  e_tooltip(formatter = htmlwidgets::JS("
-      function(params){
-        return('<strong>' + params.name +
-               '</strong><br />Similaridade: ' + params.value[0] +
-               '<br />Distância: ' + params.value[1])
-      }
-    "),
-      backgroundColor = "rgb(255,255,255,0.8)",
-      borderColor = '#333', borderWidth = 1,
-      textStyle = list(color = '#333')
-  )
-```
+<!-- ```{r} -->
+<!-- # 1/`Distância`,  -->
+
+<!-- similaridades %>% -->
+<!--   inner_join(distancias) %>% -->
+<!--   mutate(Dupla = paste(Song1, Song2, sep = " vs "), -->
+<!--          `Distância` = (`Distância` - min(`Distância`))/(max(`Distância`) - min(`Distância`))) %>% -->
+<!--   e_chart(Similaridade) %>% -->
+<!--   e_scatter(`Distância`, -->
+<!--             bind = Dupla # Define nomes para as observações -->
+<!--             ) %>% -->
+<!--   e_loess(`Distância` ~ Similaridade, showSymbol = FALSE) %>% -->
+<!--   e_lm(`Distância` ~ Similaridade, showSymbol = FALSE) %>% -->
+<!--   e_tooltip(formatter = htmlwidgets::JS(" -->
+<!--       function(params){ -->
+<!--         return('<strong>' + params.name + -->
+<!--                '</strong><br />Similaridade: ' + params.value[0] + -->
+<!--                '<br />Distância: ' + params.value[1]) -->
+<!--       } -->
+<!--     "), -->
+<!--       backgroundColor = "rgb(255,255,255,0.8)", -->
+<!--       borderColor = '#333', borderWidth = 1, -->
+<!--       textStyle = list(color = '#333') -->
+<!--   ) -->
+<!-- ``` -->
+
 
 # Cluster
+
+(só selecionei as colunas, todas estão no spofify, né?)
+
+The last part of the analysis is the creation of cluster with the songs. Only the Spotify features were considered, so in the totality we have xx songs, in multivariate technicts it is usual to work with at least 5 rows to each feature in the analysis, which it is not the case here. But we will go forward. 
+
+Firsts things first, it is necessary to choose the number of clusters we will predict, below we have a plot where is possible to see *the sum of diffecenres??*, increasing the number of clusters always to decrease this metric, so the interesting here is to choose the value that the rate of change starts to be low. The number 4 seems to be a good candidate, but for some reason, i decided to use 3...
 
 ```{r}
 set.seed(123)
@@ -1257,6 +1280,12 @@ fviz_nbclust(data_cluster, kmeans, method = "wss")
 Com 5 clusters, um deles fica com apenas uma observação...
 - Outra coisa: são 9 variáveis, para um pca decente, precisaria de pelo menos 90 músicas, e aqui eu tenho 73...
 
+Let's go to the clusters, I used the K-Means algorithim to create the clusters and to represent then I create Principal Component Analysis, take the two PCAs that contains the highest variability to the plot and we could analyse how the clusters look.
+
+In that way, the three groups are totally separated, with really diferent sizes, the orange one has only six songs and it its clear that these songs are the most calm ones from the discography, th lilac group has 21 songs, while the last one has more than the double, 47 songs.
+
+(uai, a ordem de grupos não bate com a do gráfico de baixo)
+
 ```{r}
 k3 <- kmeans(data_cluster, centers = 3, nstart = 25)
 pca <- prcomp(data_cluster)
@@ -1268,11 +1297,14 @@ cbind(data_cluster,
       pca$x[,1:2]) %>%
     as.data.frame() %>%
     mutate(across(everything(), as.numeric),
-           agrupamento = case_when(agrupamento == 2 ~ 0,
-                                   agrupamento == 1 ~ 2,
-                                   T ~ agrupamento),
-           agrupamento = ifelse(agrupamento == 0, 1, agrupamento),
-           agrupamento = paste("Grupo", agrupamento)) %>%
+           across(everything(), ~round(., 3)),
+           # agrupamento = case_when(agrupamento == 2 ~ 0,
+           #                         agrupamento == 1 ~ 2,
+           #                         T ~ agrupamento),
+           # agrupamento = ifelse(agrupamento == 0, 1, agrupamento),
+           agrupamento = ifelse(agrupamento > 1, agrupamento + 1, agrupamento),
+           agrupamento = ifelse(agrupamento == 4, 2, agrupamento),
+           agrupamento = paste("Group", agrupamento)) %>%
     arrange(agrupamento) %>%
     rownames_to_column("SName") %>%
     group_by(agrupamento) %>%
@@ -1296,14 +1328,16 @@ Acredito que o PCA1 é muito influenciado por energia e tal e outro?
 agrupamentos <- songs %>%
   select(2, 6:14) %>%
   drop_na() %>%
-  mutate(agrupamento = fitted(k3, method = "class"))
+  mutate(agrupamento = fitted(k3, method = "class"),
+         agrupamento = ifelse(agrupamento > 1, agrupamento + 1, agrupamento),
+           agrupamento = ifelse(agrupamento == 4, 2, agrupamento))
 
 shared_agrupamentos <- SharedData$new(agrupamentos)
 
 bscols(widths = c(3, NA),
 
   list(
-    filter_select("agrupamento", "Escolha o Grupo",
+    filter_select("agrupamento", "Pick a Group",
                   shared_agrupamentos, ~agrupamento, multiple = F)
   ),
 
