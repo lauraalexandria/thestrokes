@@ -80,7 +80,7 @@ div.meunome {
 }
   
 b, strong {
-  color: #FF6F61;
+  color: #548CA8;
 }
 
 mark {
@@ -203,9 +203,9 @@ e_common(theme = "london")
 
 # Introduction
 
-In 2020, I discover The New Abnormal album and I started to be obsessed with The Strokes, beyond listen to the album over and over, I also knew their previous work and loved as well. When I decided to practice on a project project with webscraping and sentiment analysis, it seemed the perfect opportunity to use the songs i love so much and maybe understand some pattern from them. So here we go!
+In 2020, I discover [The New Abnormal](https://www.youtube.com/playlist?list=PLlLGTTlLJXAX-UwWbyH8m6SGSWRntdCf0) album and I started to be obsessed with The Strokes, beyond listen to the album over and over, I also noticed their previous work and loved as well. When I decided to practice on a project with webscraping and sentiment analysis, it seemed the perfect opportunity to use the songs i love so much and maybe understand some pattern from them. So here we go!
 
-I collect the data from Spotify and Vagalume (a website that shares songs lyrics and their translations into Portuguese), so I had access to the lyrics and some numerical features that Spotify creates to measure some features of the songs, and also other information, like which of the albums the musics are from. In case of curiosity of the code, I add buttons that allow to see the codes used. Any suggests are welcome!
+I collect the data from Spotify and Vagalume (a website that shares songs lyrics and their translations into Portuguese), so I had access to the lyrics and some numerical features that Spotify creates to measure some features of the songs, and also other information, like which of the albums the pieces are from. In case of curiosity, I add buttons that allow to see the codes I used. Any suggests are welcome!
 
 Some of the references I used are:
 
@@ -223,7 +223,7 @@ Some of the references I used are:
 
 # Word Clouds
 
-The first analysis is a Word Cloud, here we used all lyrics, but I excluded the stopwords, no futher transformations were made, like it is possible to see the words friend and friends below. The bigger the word, more frequent it is in The Strokes discography. Here we can see a huge focus on the words ```time``` and ```wanna```. (Well, it seems to me that the song [Under Control](https://www.youtube.com/watch?v=4895ajU27b0) contributed a lot for this result)
+The first analysis is a Word Cloud, here we used all lyrics, but I excluded the stopwords and no further transformation were made, like, it is possible to see the words friend and friends below. The bigger the word, more frequent it is in The Strokes discography. Here we can see a huge focus on the words ```time``` and ```wanna```. (Well, it seems to me that [Under Control](https://www.youtube.com/watch?v=4895ajU27b0) contributed a lot for this result).
 
 (eu podia fazer esse stemming ai)
 
@@ -248,7 +248,7 @@ contagem %>%
 
 # Number of words by Song
 
-Next, the question was the number of words in each song, a histogram was created to analyze this feature and it is possible to see that the majority of the songs have between 150 to 250 words, here the stop words were kept on the data. Beyond that, the released song with least words was [Metabolism](https://www.youtube.com/watch?v=5YEHqiyb7AE) with about 3 minutes and 70 words and the song with the biggest amount of words is [Eternal Summer](https://www.youtube.com/watch?v=5c3EjeP2x-Q) which has about 6 minutes long and we can listen to 395 words.
+Next, the question was the number of words in each song, a histogram was created to analyze this attribute and it is possible to see that the majority of the songs have between 150 to 250 words, here the stop words were kept on the data. Beyond that, the released song with least words was [Metabolism](https://www.youtube.com/watch?v=5YEHqiyb7AE) with about 3 minutes and 70 words and the song with the biggest amount of words is [Eternal Summer](https://www.youtube.com/watch?v=5c3EjeP2x-Q) which has about 6 minutes long and we can listen to 395 words.
 
 
 ```{r message=FALSE, warning=FALSE}
@@ -279,50 +279,16 @@ maior_quant <- maior %>% pull(n)
 
   
 <div class = "metade">
-`r menor_mus`
-</br>
-`r menor_quant` min
+### `r menor_mus`
+
+#### `r menor_quant` min
 </div>
   
 <div class = "metade">
-`r maior_mus`
-</br>
-`r maior_quant` min
+### `r maior_mus`
+
+#### `r maior_quant` min
 </div>
-
-
-<!-- # Proportion of Word in each song - é aqui que poderia entrar um ANÁLISE FATORIAL (O trem de similaridade já dá conta)  -->
-
-<!-- Foram usadas 1489 palavras diferentes em todas as músicas/ ainda tem que melhorar a tooltip aqui! -->
-
-<!-- In this analysis I select the 10 words more frequent and I summed the proportion of them in each song forming 2 variables, the first one with the 5 firsts and the second one with the remaining. Now I see that doesn't make sense.  -->
-
-<!-- ```{r message=FALSE, warning=FALSE} -->
-<!-- prop_por_song <- songs %>% select(c(2,4)) %>%  -->
-<!--   unnest_tokens(word, letras) %>% -->
-<!--   anti_join(stop_words) %>% -->
-<!--   group_by(SName, word) %>%  -->
-<!--   count() %>%  -->
-<!--   ungroup() %>% group_by(SName) %>%  -->
-<!--   mutate(prop = n/sum(n)) %>%  -->
-<!--   select(-3) %>%  -->
-<!--   pivot_wider(1:3, names_from = word, values_from = prop, values_fill = 0)  -->
-
-<!-- top_10 <- contagem %>% arrange(desc(n)) %>% slice(1:10) %>% pull(word) -->
-
-<!-- prop_por_song %>%  -->
-<!--   select(1, top_10) %>%  -->
-<!--   mutate(var1 = sum(time:love), -->
-<!--          var2 = sum(hard:night)) %>%  -->
-<!--   e_chart(var1) %>%  -->
-<!--   e_scatter(var2, symbol_size = 5, legend = F) %>%  -->
-<!--   e_tooltip(trigger = "axis",  -->
-<!--             formatter = e_tooltip_pointer_formatter("currency"), -->
-<!--             axisPointer = list(type = "cross"), -->
-<!--             backgroundColor = "rgb(255,255,255,0.8)",  -->
-<!--             borderColor = '#333', borderWidth = 1, -->
-<!--             textStyle = list(color = '#333')) -->
-<!-- ``` -->
 
 
 # Sentiment Analysis
@@ -449,7 +415,7 @@ prop_sent_by_song("Room On Fire")
 
 ### First Impressions of Earth
 
-In the third album of the band, we can see that the song [Killing Lies](https://www.youtube.com/watch?v=7BhWk7knpfo) has a significant proportion of the words is Negative and other negative feelings, while the famous [You Only Live Once](https://www.youtube.com/watch?v=pT68FS3YbQ4) has a bunch of Positive words. In these cases, again the rhythm seems to accompany the sentiments.
+In the third album of the band, we can see that the song [Killing Lies](https://www.youtube.com/watch?v=7BhWk7knpfo) has a significant proportion of Negative words and other negative feelings, while the famous [You Only Live Once](https://www.youtube.com/watch?v=pT68FS3YbQ4) has a bunch of Positive words. In these cases, again the rhythm seems to accompany the sentiments.
 
 ```{r echo=FALSE}
 prop_sent_by_song("First Impressions Of Earth")
@@ -489,7 +455,9 @@ prop_sent_by_song("The New Abnormal")
 
 ### Others
 
-And finally we have some Side-B songs, demos and covers from the band and that were available on the site where I collect the lyrics. The most positives songs are Elephant Song, Hawaii and I'll Try Anything Once (by the way, this is my favorite song ever). And with the negatives there is Modern Girls & Old Fashioned Men. 
+And finally we have some Side-B songs, demos and covers from the band and that were available on the site where I collect the lyrics. The most positives songs are Elephant Song, [Hawaii](https://www.youtube.com/watch?v=Ccqyg58VAHI) and [I'll Try Anything Once](https://www.youtube.com/watch?v=pjmaj-wtAPs) (by the way, this is my favorite song ever). And with the negatives there is [Modern Girls & Old Fashioned Men](https://www.youtube.com/watch?v=q34GQO2LFKU).
+
+Fun Fact: They realesed the The Singles while I was writing this document!
 
 ```{r echo=FALSE}
 prop_sent_by_song("Others")
@@ -525,11 +493,11 @@ gauge_trios <- function(sent){
 }
 ```
 
-Now, we gonna do a similar analysis, given a sentiment let's look  which songs have the biggest proportion. Here a have the top 3.
+Now, the next analysis is similar, but given a sentiment let's look  which songs have the biggest proportion. Here I select the top 3 in gauges. 
 
 ### Anger
 
-The three songs with the biggest proportion of anger words are: [Is This It](https://www.youtube.com/watch?v=Hgqp7l9s_9o), [You're So Right](https://www.youtube.com/watch?v=L-5Tdlhmh0Y) and [The Adults Are Talking](https://www.youtube.com/watch?v=ewOPQZZn4SY), all of them with more than 1/5 of the words as anger sentiments. Each song is from a different album, one in the first album, one in the middle of the career and the last one in the lastest album.
+The three songs with the biggest proportion of anger words are: [Is This It](https://www.youtube.com/watch?v=Hgqp7l9s_9o), [You're So Right](https://www.youtube.com/watch?v=L-5Tdlhmh0Y) and [The Adults Are Talking](https://www.youtube.com/watch?v=ewOPQZZn4SY), all of them with more than 1/5 of the words as anger sentiments. Each song is from a different album, one in the first album, one in the middle of the career and the last one from the last album.
 
 ```{r echo=FALSE}
 gauge_trios("Anger")
@@ -587,7 +555,7 @@ gauge_trios("Positive")
 
 ### Sadness
 
-The song with the biggest proportion of sadness words is [Modern Girls & Old Fashion Men](https://www.youtube.com/watch?v=38NWydYtEKY), the second one is [Post Modern Girls](https://www.youtube.com/watch?v=kin3__wyOos), both with Regina Spektor, what a coincidence, and [Take It Or Leave It](https://www.youtube.com/watch?v=bG7ZMiH6xA4) in the third position.
+The song with the biggest proportion of sadness words is [Modern Girls & Old Fashion Men](https://www.youtube.com/watch?v=38NWydYtEKY), the second one is [Post Modern Girls](https://www.youtube.com/watch?v=kin3__wyOos), both with Regina Spektor (what a coincidence), and [Take It Or Leave It](https://www.youtube.com/watch?v=bG7ZMiH6xA4) in the third position.
 
 ```{r echo=FALSE}
 gauge_trios("Sadness") 
@@ -595,7 +563,7 @@ gauge_trios("Sadness")
 
 ### Surprise
 
-About the surprise element, again, you see [Take It Or Leave It](https://www.youtube.com/watch?v=bG7ZMiH6xA4), the next song is [Metabolism](https://www.youtube.com/watch?v=5YEHqiyb7AE) and there is also [Automatic Stop](https://www.youtube.com/watch?v=wveUjX6KFR8). Again a case which every song is from a album.
+About the surprise element, again, you see [Take It Or Leave It](https://www.youtube.com/watch?v=bG7ZMiH6xA4), the next song is [Metabolism](https://www.youtube.com/watch?v=5YEHqiyb7AE) and there is also [Automatic Stop](https://www.youtube.com/watch?v=wveUjX6KFR8). Again a case which every song is from an album.
 
 ```{r echo=FALSE}
 gauge_trios("Surprise")
@@ -781,8 +749,8 @@ gauge_trios("Trust")
 
 It's time to focus in the Spotify features. They are all numeric and describe some aspects from the songs. Below there is a table with the description of the features, in case of curiosity. 
 
-|Variable              |Description |
-|:-------|:--------------------------------|
+|__Variable__              |__Description__ |
+|:------|:---------------------------------|
 |danceability             | Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable. |
 |energy                 | Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset r  | The estimated overall key of the track. Integers map to pitches using standard Pitch Class notation . E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on. If no key was detected, the value is -1. |
 |loudness               | The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Values typical range between -60 and 0 db.|
@@ -790,7 +758,7 @@ It's time to focus in the Spotify features. They are all numeric and describe so
 |speechiness             | Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks. |
 |acousticness              | A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high confidence the track is acoustic.|
 |instrumentalness       | Predicts whether a track contains no vocals. “Ooh” and “aah” sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly “vocal”. The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0. |
-|liveness                 |double    | Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 0.8 provides strong likelihood that the track is live. |
+|liveness                 | Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 0.8 provides strong likelihood that the track is live. |
 |valence                 | A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry). |
 |tempo                 | The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration. |
 
@@ -831,13 +799,14 @@ jitter_por_album <- function(var){
   
   songs %>% 
     mutate(
+      across(6:14, ~round(., 2)),
       album_name = case_when(
         album_name == "First Impressions Of Earth" ~ "First\nImpressions\nOf Earth",
         album_name == "Comedown Machine" ~ "Comedown\nMachine",
         album_name == "Future Present Past" ~ "Future\nPresent\nPast",
         album_name == "The New Abnormal" ~ "The New\nAbnormal",
         T ~ album_name),
-      choosen_var = !!sym(var),
+      choosen_var = round(!!sym(var), 2),
       album_name = factor(album_name, levels=c("Is This It", "Room On Fire", "First\nImpressions\nOf Earth", "Angles", "Comedown\nMachine", "Future\nPresent\nPast", "The New\nAbnormal", "Others"))
       )  %>% 
     filter(album_name != "Fast Animals") %>% 
@@ -883,7 +852,7 @@ top10var_por_album <- function(var){
     e_labels(position = "right") %>% 
     e_grid(left = "40%") %>% 
     e_title("Lower Values") %>% 
-    e_legend(bottom = 0) %>% 
+    e_legend(bottom = 0, type = "scroll") %>% 
     e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
               borderColor = '#333', borderWidth = 1,
               textStyle = list(color = '#333'))
@@ -899,7 +868,7 @@ top10var_por_album <- function(var){
     e_labels(position = "right") %>% 
     e_grid(left = "40%") %>% 
     e_title("Higher Values") %>%
-    e_legend(bottom = 0) %>% 
+    e_legend(bottom = 0, type = "scroll") %>% 
     e_tooltip(backgroundColor = "rgb(255,255,255,0.8)", 
               borderColor = '#333', borderWidth = 1,
               textStyle = list(color = '#333'))
@@ -941,7 +910,7 @@ top10var_por_album <- function(var){
 
 ## Danceability
 
-Here we can see that the majority of The Strokes song has betwenn 0.3 and 0.7 of the Score of Danceability of Spotify. Some of the "outliers" are: [15 Minutes](https://www.youtube.com/watch?v=-ovJyxcWkro) with the lowest score of Danceability, in the other side [Tap Out](https://www.youtube.com/watch?v=6KOT5kg59KI) has the biggest one. There is a curiosity, I would never imagine the Hawaii with less "danceality" than I'll Try Anything Once, actually, I expect Hawaii with the higher score.
+Here we can see that the majority of The Strokes song has betwenn 0.3 and 0.7 of the Score of Danceability of Spotify. Some of the "outliers" are: [15 Minutes](https://www.youtube.com/watch?v=-ovJyxcWkro) with the lowest score of Danceability, in the other side [Tap Out](https://www.youtube.com/watch?v=6KOT5kg59KI) has the biggest one. There is a curiosity, I would never imagine that [Hawaii](https://www.youtube.com/watch?v=Ccqyg58VAHI) has less "danceality" than [I'll Try Anything Once](https://www.youtube.com/watch?v=pjmaj-wtAPs), actually, I expect [Hawaii](https://www.youtube.com/watch?v=Ccqyg58VAHI) own the higher score.
 
 ```{r echo=FALSE}
 jitter_por_album("danceability")
@@ -953,7 +922,7 @@ top10var_por_album("danceability")
 
 ## Energy
 
-Between the lowest energy songs we have [Call It Fate, Call It Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg), I'll Try Anything Once, [Call Me Back](https://www.youtube.com/watch?v=ToTNGU8Zaww), [Ask Me Anything](https://www.youtube.com/watch?v=UsW040wrMNA) and [At The Door](https://www.youtube.com/watch?v=9CAz_vvsK9M), all of them make pretty sense to me. While the most energy song is [Juicebox](https://www.youtube.com/watch?v=GoltwBHXCx8) very close to [You Talk Way Too Much](https://www.youtube.com/watch?v=G9OLlofojX8) and [Partners in Crime](https://www.youtube.com/watch?v=7w5tKFh9pd0). It is also possible to say that the songs form First Impressions on Earth are have a little more energy than the other albums.
+Between the lowest energy songs we have [Call It Fate, Call It Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg), [I'll Try Anything Once](https://www.youtube.com/watch?v=pjmaj-wtAPs), [Call Me Back](https://www.youtube.com/watch?v=ToTNGU8Zaww), [Ask Me Anything](https://www.youtube.com/watch?v=UsW040wrMNA) and [At The Door](https://www.youtube.com/watch?v=9CAz_vvsK9M), all of them make pretty sense to me. While the most energy song is [Juicebox](https://www.youtube.com/watch?v=GoltwBHXCx8) very close to [You Talk Way Too Much](https://www.youtube.com/watch?v=G9OLlofojX8) and [Partners in Crime](https://www.youtube.com/watch?v=7w5tKFh9pd0). It is also possible to say that the songs from First Impressions on Earth have a little more energy than the other albums, in general.
 
 ```{r echo=FALSE}
 jitter_por_album("energy")
@@ -965,7 +934,7 @@ top10var_por_album("energy")
 
 ## Loudness
 
-About loudness a repeat of some songs talked before, they are [Call It Fate, Call It Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg), I'll Try Anything Once, [Call Me Back](https://www.youtube.com/watch?v=ToTNGU8Zaww) and [Ask Me Anything](https://www.youtube.com/watch?v=UsW040wrMNA) in the bottom of the chart. While in the biggest we see [On the Other Side](https://www.youtube.com/watch?v=fzR1-OacD8o), [You Only Live Once](https://www.youtube.com/watch?v=pT68FS3YbQ4),[Juicebox](https://www.youtube.com/watch?v=GoltwBHXCx8) and [The Way It Is](https://www.youtube.com/watch?v=Kj1a7WQta4w). It is curious to see that the first album was one of the lowest loudness and the next one was already the opposite in this metric.
+About loudness, we see a repeat of some songs talked before, they are [Call It Fate, Call It Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg), [I'll Try Anything Once](https://www.youtube.com/watch?v=pjmaj-wtAPs), [Call Me Back](https://www.youtube.com/watch?v=ToTNGU8Zaww) and [Ask Me Anything](https://www.youtube.com/watch?v=UsW040wrMNA) in the bottom of the chart. While the biggest are [On the Other Side](https://www.youtube.com/watch?v=fzR1-OacD8o), [You Only Live Once](https://www.youtube.com/watch?v=pT68FS3YbQ4), [Juicebox](https://www.youtube.com/watch?v=GoltwBHXCx8) and [The Way It Is](https://www.youtube.com/watch?v=Kj1a7WQta4w). It is curious to see that the first album was one of the lowest,in the general, and the next one has already the opposite behavior.
 
 ```{r echo=FALSE}
 jitter_por_album("loudness")
@@ -977,7 +946,7 @@ top10var_por_album("loudness")
 
 ## Speechiness
 
-Here we can see that The Strokes songs aren't too speak, the majority of the songs has less than 0.06 of the Speechiness Score. Again [Juicebox](https://www.youtube.com/watch?v=GoltwBHXCx8) is a highlight the next one is [All The Time](https://www.youtube.com/watch?v=TJC8zeu3MHk). The song of the less value of Speechiness is [Between Love & Hate](https://www.youtube.com/watch?v=b2A4gJnHsVg).
+Here we can see that The Strokes songs aren't too spoken, the majority of the songs has less than 0.06 of the Speechiness Score. Again [Juicebox](https://www.youtube.com/watch?v=GoltwBHXCx8) is a highlight the next one is [All The Time](https://www.youtube.com/watch?v=TJC8zeu3MHk). The song of the less value of Speechiness is [Between Love & Hate](https://www.youtube.com/watch?v=b2A4gJnHsVg).
 
 ```{r echo=FALSE}
 jitter_por_album("speechiness")
@@ -989,7 +958,7 @@ top10var_por_album("speechiness")
 
 ## Acousticness
 
-The songs in general are also low to acoustic score, and the same musics from the low danceability are here in the maximum values: [Call It Fate, Call It Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg), I'll Try Anything Once, [Call Me Back](https://www.youtube.com/watch?v=ToTNGU8Zaww), [Ask Me Anything](https://www.youtube.com/watch?v=UsW040wrMNA) and [At The Door](https://www.youtube.com/watch?v=9CAz_vvsK9M).
+The songs in general have also low values to acoustic score, and the same musics with the low danceability are here in the maximum values: [Call It Fate, Call It Karma](https://www.youtube.com/watch?v=Txn5-dKLFHg), [I'll Try Anything Once](https://www.youtube.com/watch?v=pjmaj-wtAPs), [Call Me Back](https://www.youtube.com/watch?v=ToTNGU8Zaww), [Ask Me Anything](https://www.youtube.com/watch?v=UsW040wrMNA) and [At The Door](https://www.youtube.com/watch?v=9CAz_vvsK9M).
 
 ```{r echo=FALSE}
 jitter_por_album("acousticness")
@@ -1001,7 +970,7 @@ top10var_por_album("acousticness")
 
 ## Instrumentalness
 
-This is the variable with the biggest variance in all albuns, so it is difficult to highlight any song.
+This is the variable with the biggest variance in all albums, so it is difficult to highlight any song.
 
 ```{r echo=FALSE}
 jitter_por_album("instrumentalness")
@@ -1013,7 +982,7 @@ top10var_por_album("instrumentalness")
 
 ## Valence
 
-(Nick) Valence is about the positivity in the song too, here we the three biggest are [You Only Live Once](https://www.youtube.com/watch?v=pT68FS3YbQ4), [One way trigger](https://www.youtube.com/watch?v=reifFcUoTKw) and [Alone, Together](https://www.youtube.com/watch?v=oUW7V4X0My0) and in the other side we have [All The Time](https://www.youtube.com/watch?v=TJC8zeu3MHk), [Selfless](https://www.youtube.com/watch?v=1-W6whvn8Bs) and [Heart In A Cage](https://www.youtube.com/watch?v=3dyNbMVfeyM). All seems pretty acurate. Maybe there is a tendency of decrease relate to the time.
+~~Nick~~ Valence is about the positiveness in the song too, here the three biggest values are [You Only Live Once](https://www.youtube.com/watch?v=pT68FS3YbQ4), [One Way Trigger](https://www.youtube.com/watch?v=reifFcUoTKw) and [Alone, Together](https://www.youtube.com/watch?v=oUW7V4X0My0) and in the other side we have [All The Time](https://www.youtube.com/watch?v=TJC8zeu3MHk), [Selfless](https://www.youtube.com/watch?v=1-W6whvn8Bs) and [Heart In A Cage](https://www.youtube.com/watch?v=3dyNbMVfeyM). All seems pretty acurate. Maybe there is a decrease tendency relate to the time, in other words, the values are decreasing with the pass of the time.
 
 ```{r echo=FALSE}
 jitter_por_album("valence")
@@ -1025,7 +994,7 @@ top10var_por_album("valence")
 
 ## Tempo 
 
-In the tempo there are also a concentraicition in the values, with [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) as a higlight and [15 Minutes](https://www.youtube.com/watch?v=-ovJyxcWkro) and [Hard to Explain](https://www.youtube.com/watch?v=BXkm6h6uq0k) in the oppostite value.
+In the Tempo Score there are also a concentration in the values, with [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) as a higlight and [15 Minutes](https://www.youtube.com/watch?v=-ovJyxcWkro) and [Hard to Explain](https://www.youtube.com/watch?v=BXkm6h6uq0k) in the oppostite spectrum.
 
 ```{r echo=FALSE}
 jitter_por_album("tempo")
@@ -1035,71 +1004,52 @@ jitter_por_album("tempo")
 top10var_por_album("tempo")
 ```
 
-# 
+<!-- #  -->
 
-Here there are the correlation between the spotify features seen.  
+<!-- Here there are the correlation between the spotify features seen.   -->
 
-```{r}
-# Na verdade, eu nem lembro o que eu tava tentando fazer com isso
+<!-- ```{r} -->
+<!-- # Na verdade, eu nem lembro o que eu tava tentando fazer com isso -->
 
-shared_variavel1 <- songs %>% 
-  pivot_longer(6:14, names_to = "var", values_to = "valor") %>% 
-  select(6:7) %>% 
-  SharedData$new()
-shared_variavel2 <- songs %>% 
-  pivot_longer(6:14, names_to = "var", values_to = "valor") %>% 
-  select(6:7) %>% 
-  SharedData$new()
+<!-- shared_variavel1 <- songs %>%  -->
+<!--   pivot_longer(6:14, names_to = "var", values_to = "valor") %>%  -->
+<!--   select(6:7) %>%  -->
+<!--   SharedData$new() -->
+<!-- shared_variavel2 <- songs %>%  -->
+<!--   pivot_longer(6:14, names_to = "var", values_to = "valor") %>%  -->
+<!--   select(6:7) %>%  -->
+<!--   SharedData$new() -->
 
-bscols(widths = c(3, NA),
+<!-- bscols(widths = c(3, NA), -->
 
-  list(
-    filter_select("varx", "Eixo X", shared_variavel1, ~var,
-                  multiple = F),
-    filter_select("vary", "Eixo Y", shared_variavel2, ~var,
-                  multiple = F)
-  ),
+<!--   list( -->
+<!--     filter_select("varx", "Eixo X", shared_variavel1, ~var, -->
+<!--                   multiple = F), -->
+<!--     filter_select("vary", "Eixo Y", shared_variavel2, ~var, -->
+<!--                   multiple = F) -->
+<!--   ), -->
 
-  ggplotly( # QUAL O PROBLEMA DO FILTRO??
+<!--   ggplotly( # QUAL O PROBLEMA DO FILTRO?? -->
 
-    ggplot() +
-      geom_point(aes(x = shared_variavel1$data() %>% pull(valor),
-                     y = shared_variavel2$data() %>% pull(valor)))
+<!--     ggplot() + -->
+<!--       geom_point(aes(x = shared_variavel1$data() %>% pull(valor), -->
+<!--                      y = shared_variavel2$data() %>% pull(valor))) -->
 
-    )
+<!--     ) -->
 
-)
+<!-- ) -->
 
-```
+<!-- ``` -->
 
 # Similarities
 
-Based on the Spotify features and the words from each song, it is possible to mesure the similarity between than, in the next visualizations we can see some of them.
-
-Primeira tentativa com word2vec que eu não achei tão legal o resultado
-
-```{r eval=FALSE, message=FALSE, include=FALSE}
-set.seed(123456789)
-
-token_songs <- songs %>% select(c(2,4)) %>%
-  unnest_tokens(word, letras) %>%
-  anti_join(stop_words)
-
-model <-word2vec(x = token_songs$word, type ="cbow",dim = 15, iter = 20)
-# o tipo também pode ser "skip-gram" 
-
-embedding <- as.matrix(model)
-embedding <- predict(model, c("beats"), type = "embedding") 
-
-predict(model,c("beats"),type ="nearest",top_n =5) # 5 palavras mais similares
-
-```
+The next analysis are about the similarity between the songs, it is possible to measure those similarities using the Spotify features and the words from each song. The next visualizations show these informations.
 
 ## Similarity between lyrics
 
-First, we will look to the lyrics, the similarity here was calculated with the _Cossine Similarity_, largely used to describe the similarity between points. When we have two points in a plan, they can be represented as vectors from the (0,0) coordinate in the plan and it is possible to messure a angle using those vectors, if this angle is small, we can say that the points are similar, in other words, the lower the Cossine value bigger the similarity.
+First, we will look to the lyrics, the similarity here was calculated with the _Cossine Similarity_, largely used to describe the similarity between points. When we have two points in a plan, they can be represented as vectors from the (0,0) coordinate in the plan and it is possible to measure the angle between those vectors, if this angle is small, we can say that the points are similar, in other words, the lower the Cossine value bigger the similarity.
 
-As we can see, that the calculus is done with pairs of songs, with the table below we can set a song and look witch songs are more or less similar or to check a specific pair in yout mind.
+As we can see, the calculus is done with pairs of songs, with the table below we can set a song and look which songs are more or less similar or to check a specific pair in your mind.
 
 ```{r message = F}
 freq_by_song <- songs %>% select(c(2,4)) %>% # provavelmente posso apagar
@@ -1125,28 +1075,28 @@ calc_cos_sim <- function(name, freq = freq_by_song) {
 
 }
 
-similaridades <- mapply(calc_cos_sim, freq_by_song %>% names() %>% .[-1]) %>%
+similaritys <- mapply(calc_cos_sim, freq_by_song %>% names() %>% .[-1]) %>%
   bind_cols() %>%
-  pivot_longer(1:85, names_to = "Song1", values_to = "Similaridade") %>%
+  pivot_longer(1:85, names_to = "Song1", values_to = "Similarity") %>%
   mutate(Song1 = str_remove(Song1, ".Similarity"),
          Song2 = freq_by_song %>% names() %>% .[-1] %>% rep(each = 85),
-         Similaridade = round(Similaridade, 3)) %>%
-  filter(Similaridade != 1) %>%
-  relocate(Similaridade, .after = last_col())
+         Similarity = round(Similarity, 3)) %>%
+  filter(Similarity != 1) %>%
+  relocate(Similarity, .after = last_col())
 
-shared_similaridades <- SharedData$new(similaridades)
+shared_similaritys <- SharedData$new(similaritys)
 
 bscols(widths = c(3, NA),
 
   list(
-    filter_select("song1", "Escolha a 1° Música",
-                  shared_similaridades, ~Song1, multiple = F),
-    filter_select("song2", "Escolha a 2° Música",
-                  shared_similaridades, ~Song2, multiple = F)
+    filter_select("song1", "Choose the 1° Song",
+                  shared_similaritys, ~Song1, multiple = F),
+    filter_select("song2", "Choose the 2° Song",
+                  shared_similaritys, ~Song2, multiple = F)
   ),
 
   datatable(
-    shared_similaridades, width = 500,
+    shared_similaritys, width = 500,
     class = "cell-border hover row-border",
     options = list(
       dom = 'tip',
@@ -1164,48 +1114,48 @@ bscols(widths = c(3, NA),
 
 Some interresting highlights are: 
 
- - Songs that are demos are tha most correlated with their final version, obviously;
- - The fisrt unrelates and released songs that appear is the pair [Vision of Division](https://www.youtube.com/watch?v=jBx9gQyiYoo) and [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) with a score equals to 0.645;
- - The song [You Talk Way Too Much](https://www.youtube.com/watch?v=G9OLlofojX8) is righly related with a bunch of songs;
+ - Songs that are demos are the most correlated with their final version, obviously;
+ - The first unrelateds and released songs that appear is the pair [Vision of Division](https://www.youtube.com/watch?v=jBx9gQyiYoo) and [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) with a score equals to 0.645;
+ - The song [You Talk Way Too Much](https://www.youtube.com/watch?v=G9OLlofojX8) is highly related with a bunch of songs;
 
 ## Similarity between features
 
-Diferente da outra função, por que as colunas não são as músicas;
-Aqui já pode ser distância também;
+<!-- Diferente da outra função, por que as colunas não são as músicas; -->
+<!-- Aqui já pode ser distância também; -->
 
-Here the Spotify features were used, ad the distance choosen was the Euclidian Distance, so a big distance means low similirity and vice versa. The use of the table is the same as the previous.  
+Here the Spotify features were used, and the chosen distance was the Euclidian Distance, so a big distance means low similarity and vice versa. The use of the table is the same as the previous.  
 
 Some interresting highlights are:
 
 - The pair with the biggest distance is [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) and [Hard To Explain](https://www.youtube.com/watch?v=BXkm6h6uq0k), with a distance equal to 117.41;
-- Actually, [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) is present in a bunch of the top pairs (the firsts 15 pairs, to be more accurate, and in others positions), maybe we can say this is the most different song of the band? Besides that, the song most close is [Not The Same Anymore](https://www.youtube.com/watch?v=sY1U0eJV5es) with a distance of 22,64;
-- In the other side, the pair more similar is [Tap Out](https://www.youtube.com/watch?v=6KOT5kg59KI) and [What Ever Happened?](https://www.youtube.com/watch?v=yQOJTLylm-A) with a distance of 0.48. 
+- Actually, [Under Cover of Darkness](https://www.youtube.com/watch?v=_l09H-3zzgA) is present in a bunch of the top pairs distances (the firsts 15 pairs, to be more accurate, and in others positions), maybe we can say this is the most different song of the band? Besides that, the nearest song is [Not The Same Anymore](https://www.youtube.com/watch?v=sY1U0eJV5es) with a distance of 22.64;
+- In the other side, the pair more similar is [Tap Out](https://www.youtube.com/watch?v=6KOT5kg59KI) and [What Ever Happened?](https://www.youtube.com/watch?v=yQOJTLylm-A) with a distance of 0.48; 
 
 
 ```{r}
-distancias <- get_dist(songs %>%
+distances <- get_dist(songs %>%
                          column_to_rownames("SName") %>%
                          select(5:13) %>% drop_na()) %>%
   as.matrix() %>%
   as.data.frame() %>%
   rownames_to_column("Song1") %>%
-  pivot_longer(-1, names_to = "Song2", values_to = "Distância") %>%
-  filter(`Distância` != 0) %>%
-  mutate(`Distância` = round(`Distância`, 2))
+  pivot_longer(-1, names_to = "Song2", values_to = "Distance") %>%
+  filter(`Distance` != 0) %>%
+  mutate(`Distance` = round(`Distance`, 2))
 
-shared_distancias <- SharedData$new(distancias)
+shared_distances <- SharedData$new(distances)
 
 bscols(widths = c(3, NA),
 
   list(
     filter_select("song1", "Escolha a 1° Música",
-                  shared_distancias, ~Song1, multiple = F),
+                  shared_distances, ~Song1, multiple = F),
     filter_select("song2", "Escolha a 2° Música",
-                  shared_distancias, ~Song2, multiple = F)
+                  shared_distances, ~Song2, multiple = F)
   ),
 
   datatable(
-    shared_distancias, width = 500,
+    shared_distances, width = 500,
     class = "cell-border hover row-border",
     options = list(
       dom = 'tip',
@@ -1219,7 +1169,7 @@ bscols(widths = c(3, NA),
   ) 
   # %>% 
   #   formatStyle(
-  #     'Distância',
+  #     'Distance',
   #     backgroundColor = '#B2B1B9'
   # )
 
@@ -1227,29 +1177,29 @@ bscols(widths = c(3, NA),
 
 ```
 
-What if the two similarities have a association? This is the question the nexts charts try to answer. Unfortunally, the charts show an unexpected relation, because I was expecying a negative correlation but the two measures aren't so correlated. 
+What if the two similarities have a association? This is the question the next charts try to answer. Unfortunately, the charts show an unexpected relation, I was expecting a negative correlation but the two measures doesn't seen to be so correlated. 
 
-Maybe some of the points more close with the desired correlation are Hard to Explain vs Undercover the Darkness and  15 Minutes vs Undercover the Darkness, where we see a high distance with a low cossine similarity, while the pair  Fast Animals vs Slow Animals shows the completely oppositive pattern. 
+Maybe some of the points more close with the desired correlation are Hard to Explain vs Undercover the Darkness and  15 Minutes vs Undercover the Darkness, where we see a high distance with a low cossine similarity, while the pair Fast Animals vs Slow Animals shows the completely opposite pattern. 
 
 A attempt with the inverse of the Distance was also made to try see the features with the same logic of similarity, but the relation keep pretty similar.
 
 
 ```{r message=F}
-similaridades %>%
-  inner_join(distancias) %>%
+similaritys %>%
+  inner_join(distances) %>%
   mutate(Dupla = paste(Song1, Song2, sep = " vs ")) %>%
-  e_chart(Similaridade) %>%
-  e_scatter(`Distância`,
+  e_chart(Similarity) %>%
+  e_scatter(`Distance`,
             bind = Dupla # Define nomes para as observações
             ) %>%
-  e_loess(`Distância` ~ Similaridade, showSymbol = FALSE) %>%
-  e_lm(`Distância` ~ Similaridade, showSymbol = FALSE) %>%
+  e_loess(`Distance` ~ Similarity, showSymbol = FALSE) %>%
+  e_lm(`Distance` ~ Similarity, showSymbol = FALSE) %>%
   e_axis_labels(x = "Cossine Similarity - Lyrics              ", y = "              Euclydian Distance - Spotify Features") %>% 
   e_tooltip(formatter = htmlwidgets::JS("
       function(params){
         return('<strong>' + params.name +
-               '</strong><br />Similaridade: ' + params.value[0] +
-               '<br />Distância: ' + params.value[1])
+               '</strong><br />Similarity: ' + params.value[0] +
+               '<br />Distance: ' + params.value[1])
       }
     "),
       backgroundColor = "rgb(255,255,255,0.8)",
@@ -1260,23 +1210,23 @@ similaridades %>%
 
 
 <!-- ```{r} -->
-<!-- # 1/`Distância`,  -->
+<!-- # 1/`Distance`,  -->
 
-<!-- similaridades %>% -->
-<!--   inner_join(distancias) %>% -->
+<!-- similaritys %>% -->
+<!--   inner_join(distances) %>% -->
 <!--   mutate(Dupla = paste(Song1, Song2, sep = " vs "), -->
-<!--          `Distância` = (`Distância` - min(`Distância`))/(max(`Distância`) - min(`Distância`))) %>% -->
-<!--   e_chart(Similaridade) %>% -->
-<!--   e_scatter(`Distância`, -->
+<!--          `Distance` = (`Distance` - min(`Distance`))/(max(`Distance`) - min(`Distance`))) %>% -->
+<!--   e_chart(Similarity) %>% -->
+<!--   e_scatter(`Distance`, -->
 <!--             bind = Dupla # Define nomes para as observações -->
 <!--             ) %>% -->
-<!--   e_loess(`Distância` ~ Similaridade, showSymbol = FALSE) %>% -->
-<!--   e_lm(`Distância` ~ Similaridade, showSymbol = FALSE) %>% -->
+<!--   e_loess(`Distance` ~ Similarity, showSymbol = FALSE) %>% -->
+<!--   e_lm(`Distance` ~ Similarity, showSymbol = FALSE) %>% -->
 <!--   e_tooltip(formatter = htmlwidgets::JS(" -->
 <!--       function(params){ -->
 <!--         return('<strong>' + params.name + -->
-<!--                '</strong><br />Similaridade: ' + params.value[0] + -->
-<!--                '<br />Distância: ' + params.value[1]) -->
+<!--                '</strong><br />Similarity: ' + params.value[0] + -->
+<!--                '<br />Distance: ' + params.value[1]) -->
 <!--       } -->
 <!--     "), -->
 <!--       backgroundColor = "rgb(255,255,255,0.8)", -->
@@ -1288,11 +1238,11 @@ similaridades %>%
 
 # Cluster
 
-(só selecionei as colunas, todas estão no spofify, né?)
+The last part of the analysis is the creation of clusters with the songs. This is equivalent to create groups of songs that share characteristics and in other words, are similar. Only the Spotify features were considered.
 
-The last part of the analysis is the creation of cluster with the songs. Only the Spotify features were considered, so in the totality we have xx songs, in multivariate technicts it is usual to work with at least 5 rows to each feature in the analysis, which it is not the case here. But we will go forward. 
+<!-- Only the Spotify features were considered, so in the totality we have 73 songs, in multivariate techniques it is usual to work with at least 5 rows to each feature in the analysis, which it is not the case here. But we will go forward.  -->
 
-Firsts things first, it is necessary to choose the number of clusters we will predict, below we have a plot where is possible to see *the sum of diffecenres??*, increasing the number of clusters always to decrease this metric, so the interesting here is to choose the value that the rate of change starts to be low. The number 4 seems to be a good candidate, but for some reason, i decided to use 3...
+Firsts things first, it is necessary to choose the number of clusters we will predict, below we have a plot where is possible to see the total within sum of square, increasing the number of clusters always decrease this metric, so the interesting here is to choose the value that the rate of change starts to be low. The number 4 seems to be a good candidate, but during experiment, I decided to use 3, because of the quality of the result.
 
 ```{r}
 set.seed(123)
@@ -1306,14 +1256,12 @@ data_cluster <- songs %>%
 fviz_nbclust(data_cluster, kmeans, method = "wss")
 ```
 
-Com 5 clusters, um deles fica com apenas uma observação...
-- Outra coisa: são 9 variáveis, para um pca decente, precisaria de pelo menos 90 músicas, e aqui eu tenho 73...
+<!-- Com 5 clusters, um deles fica com apenas uma observação... -->
+<!-- - Outra coisa: são 9 variáveis, para um pca decente, precisaria de pelo menos 90 músicas, e aqui eu tenho 73... -->
 
-Let's go to the clusters, I used the K-Means algorithim to create the clusters and to represent then I create Principal Component Analysis, take the two PCAs that contains the highest variability to the plot and we could analyse how the clusters look.
+Let's go to the clusters, I used the K-Means algorithm to create the clusters and to represent them I created a Principal Component Analysis, take the two PCAs that contains the highest variability in the plot in order to analyze how the clusters look.
 
-In that way, the three groups are totally separated, with really diferent sizes, the orange one has only six songs and it its clear that these songs are the most calm ones from the discography, th lilac group has 21 songs, while the last one has more than the double, 47 songs.
-
-(uai, a ordem de grupos não bate com a do gráfico de baixo)
+In that way, the three groups are totally separated, with really different sizes, the orange one has only six songs and it its clear that these songs are the most calm ones from the discography, the lilac group has 21 songs, while the last one has more than the double, 47 songs.
 
 ```{r}
 k3 <- kmeans(data_cluster, centers = 3, nstart = 25)
@@ -1351,9 +1299,7 @@ cbind(data_cluster,
         borderWidth = 1, textStyle = list(color = '#333'))
 ```
 
-Acredito que o PCA1 é muito influenciado por energia e tal e outro?
-
-Below there is the songs listed and it is possible to filter the groups and look each song. 
+Below there are the songs and their clusters. It is possible to filter the groups and look each song and also their features. 
 
 ```{r}
 groups <- songs %>%
@@ -1390,11 +1336,11 @@ bscols(widths = c(3, NA),
 ```
 
 
-## uns boxplot {.tabset .tabset-pills .tabcontent}
+## Each group {.tabset .tabset-pills .tabcontent}
 
-In order to analyse the properties of each of the groups, the boxplots of each features are seem below.
+In order to analyze the properties of each of the groups, some boxplots about each features are seem below. That's a way to confirm if the songs in the same group are similar and if there differences among the groups.
 
-In summary, seems that the Group 1 has the calm songs, the Group 2 the happy (?) ones and in the Group 3 has left the loud and dirty ones??
+In summary, seems that the Group 1 has the calm songs, the Group 2 the happy (?) ones and in the Group 3 has left the loud and dirty ones (??)
 
 ```{r}
 boxplot_por_grupo <- function(var){
@@ -1421,7 +1367,7 @@ boxplot_por_grupo <- function(var){
 
 ### Danceability
 
-Looking at the Danceability, we cansay that the Group 2 has highier values in general.
+Looking at the Danceability, we can say that the Group 2 has higher values in general.
 
 ```{r echo=FALSE}
 boxplot_por_grupo("danceability")
@@ -1429,7 +1375,7 @@ boxplot_por_grupo("danceability")
 
 ### Energy
 
-The energy has a asceding increase among the groups, it is nitiduous that the first one is the lowest energy.
+The energy has a ascending increase among the groups, it is clear that the first one is the lowest energy.
 
 ```{r echo=FALSE}
 boxplot_por_grupo("energy")
@@ -1437,7 +1383,7 @@ boxplot_por_grupo("energy")
 
 ### Loudness
 
-Again the first group has the less louder profile?
+The same pattern from the Energy score is seem with the Loudness.
 
 ```{r echo=FALSE}
 boxplot_por_grupo("loudness")
@@ -1445,7 +1391,7 @@ boxplot_por_grupo("loudness")
 
 ### Speechiness
 
-The Speechiness is pretty similar in every group.
+The Speechiness is pretty similar in every group. Remember from the scatter plots where we had all the songs, that this feature were generally low. 
 
 ```{r echo=FALSE}
 boxplot_por_grupo("speechiness")
@@ -1477,7 +1423,7 @@ boxplot_por_grupo("valence")
 
 ### Tempo
 
-Yeah... Also pretty much similar.
+Yeah... Also pretty much similar, just the Group 3 with higher variability.
 
 ```{r echo=FALSE}
 boxplot_por_grupo("tempo")
