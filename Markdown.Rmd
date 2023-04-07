@@ -225,7 +225,7 @@ Some of the references I used are:
 
 The first analysis is a Word Cloud, here we used all lyrics, but I excluded the stopwords and no further transformation were made, like, it is possible to see the words friend and friends below. The bigger the word, more frequent it is in The Strokes discography. Here we can see a huge focus on the words ```time``` and ```wanna```. (Well, it seems to me that [Under Control](https://www.youtube.com/watch?v=4895ajU27b0) contributed a lot for this result).
 
-(eu podia fazer esse stemming ai)
+<!-- (eu podia fazer esse stemming ai) -->
 
 ```{r message=F, warning=F}
 contagem <- songs %>% select(c(2,4)) %>%
